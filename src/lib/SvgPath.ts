@@ -10,20 +10,14 @@ export class SvgPath {
     let coordinates = geometry.coordinates;
     for (let i=0;i<coordinates.length;++i) {
       let coordinate = coordinates[i];
-      // console.log(coordinate);
       for (let i2=0;i2<coordinate.length;++i2) {
         let xy = coordinate[i2];
-        // console.log("------------");
-        // console.log(xy);
         for (let i3=0;i3<xy.length;++i3) {
           this.addPath(xy[i3][0], xy[i3][1]);
         }
         this.path += "Z";
       }
-      
     }
-    // console.log('****************');
-    // console.log(this.path);
   }
 
   private addPath(x: number, y: number) {
