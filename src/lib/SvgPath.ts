@@ -4,7 +4,7 @@
 export class SvgPath {
 
   private d: number = 0;
-  private path: string = '';
+  private pathStr: string = '';
 
   constructor(geometry: any) {
     let coordinates = geometry.coordinates;
@@ -15,7 +15,7 @@ export class SvgPath {
         for (let i3=0;i3<xy.length;++i3) {
           this.addPath(xy[i3][0], xy[i3][1]);
         }
-        this.path += "Z";
+        this.pathStr += "Z";
       }
     }
   }
@@ -27,18 +27,18 @@ export class SvgPath {
     y = Math.round(y);
     switch (this.d) {
       case 0: {
-        this.path += `M${x},${y}`;
+        this.pathStr += `M${x},${y}`;
         this.d = 1;
         break;
       }
       case 1: {
-        this.path += `L${x},${y}`;
+        this.pathStr += `L${x},${y}`;
         break;
       }
     }
   }
 
-  public get getPath() {
-    return this.path;
+  public get path() {
+    return this.pathStr;
   }
 }

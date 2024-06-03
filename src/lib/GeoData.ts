@@ -8,9 +8,6 @@ export class GeoData {
   private geoDatas:any[] = [];
 
   constructor(geoData: any) {
-
-    const projection = geoMercator();
-    const pathGenerator = geoPath().projection(projection);
     geoData.features.map((feature : any) => {
 
       const { I: isoCode, N: countryName, C: coordinates } = feature;
@@ -24,7 +21,7 @@ export class GeoData {
       };
 
       let path = new SvgPath(geoFeature.geometry);
-      this.geoDatas.push({path:path.getPath, countryName: geoFeature.properties?.NAME});
+      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME});
     });
   }
 
