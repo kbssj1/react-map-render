@@ -4,8 +4,13 @@ import geoData from "../lib/countries.geo";
 import { GeoData } from "@/lib/GeoData";
 import * as React from 'react';
 import { PathTooltip } from './tooltip';
+import { Scene } from "@/lib/Scene";
 
 let gd = new GeoData(geoData);
+gd.setPosition(600, 400).setScale(0.3, -0.4);
+
+let scene = new Scene()
+scene.addObject(gd);
 
 export default function Home() {
 
@@ -19,7 +24,7 @@ export default function Home() {
 
   }, [])
 
-  const regions = gd.getGeoData.map((data, index) => {
+  const regions = gd.geoData.map((data, index) => {
     let colors:any[] = [];
     colors.push("#" + "C870E0");
     colors.push("#" + "6E5FD3");

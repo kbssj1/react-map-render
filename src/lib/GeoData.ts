@@ -1,11 +1,18 @@
 import type GeoJSON from "geojson";
 import { SvgPath } from "./SvgPath";
 import { geoMercator, geoPath } from "./d3-geo/index";
+import { Object } from "./Object";
+
 /**
  * 
+ * 
  */
-export class GeoData {
+export class GeoData implements Object {
   private geoDatas:any[] = [];
+  public positionX: number = 0;
+  public positionY: number = 0;
+  public scaleX: number = 0;
+  public scaleY: number = 0;
 
   constructor(geoData: any) {
     geoData.features.map((feature : any) => {
@@ -25,8 +32,20 @@ export class GeoData {
     });
   }
 
-  public get getGeoData() {
+  public get geoData() {
     return this.geoDatas;
+  }
+
+  public setPosition(positionX:number, positionY:number) {
+    this.positionX = positionX;
+    this.positionY = positionY;
+    return this;
+  }
+
+  public setScale(scaleX:number, scaleY:number) {
+    this.scaleX = scaleX;
+    this.scaleY = scaleY;
+    return this;
   }
 
 }
