@@ -1,8 +1,8 @@
 import { Object } from "./Object";
-
 /**
  * 
  */
+
 export class Scene {
 
   constructor() {
@@ -10,7 +10,11 @@ export class Scene {
   }
 
   public addObject(obj: Object) {
-    
+
+  }
+
+  public draw(div:string) {
+
   }
 
 }
