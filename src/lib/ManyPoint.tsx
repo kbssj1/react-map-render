@@ -4,16 +4,17 @@ import * as React from 'react';
 import { PathTooltip } from "@/app/tooltip";
 
 interface PropsType {
-  geoData: GeoData;
+  width: number;
+  height: number
 }
 
-function ManyPoint() {
+function ManyPoint(props: PropsType) {
 
   let gd = new GeoData(geoData);
-  gd.setPosition(600, 400).setScale(0.3, -0.4);
+  gd.setPosition(props.height, props.width).setScale(props.height * 0.0003, -props.width * 0.0004);
 
   const containerRef = React.createRef<SVGSVGElement>();
-  const regions = gd.geoData.map((data, index) => {
+  const regions:any = gd.geoData.map((data, index) => {
     let colors: any[] = [];
     colors.push("#" + "C870E0");
     colors.push("#" + "6E5FD3");
@@ -48,15 +49,15 @@ function ManyPoint() {
   });
 
   // Build paths
-  const regionPaths = regions.map((entry) => entry.path);
+  const regionPaths = regions.map((entry:any) => entry.path);
     
   //Build tooltips
-  const regionTooltips = regions.map((entry) => entry.highlightedTooltip);
+  const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
   return (
-    <main id={"test"}>
-      <svg width='100%' height={800} ref={containerRef}>
-        <g transform={`translate(${gd.positionX}, ${gd.positionY}) scale(${gd.scaleX}, ${gd.scaleY})`}>
+    <main>
+      <svg width={props.width} height={props.height} ref={containerRef}>
+        <g transform={`translate(${props.width * 0.5}, ${props.height * 0.5}) scale(${gd.scaleX}, ${gd.scaleY})`}>
           {regionPaths}
         </g>
         {regionTooltips}

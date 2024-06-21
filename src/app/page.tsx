@@ -6,7 +6,7 @@ export default function Home() {
 
   return (
     <main>
-      <ManyPoint />
+      <ManyPoint width={700} height={700}/>
     </main>
   );
 }
