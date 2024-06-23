@@ -1,16 +1,16 @@
 import { GeoData } from "@/lib/GeoData";
-import geoData from "../lib/countries.geo";
 import * as React from 'react';
 import { PathTooltip } from "@/app/tooltip";
 
 interface PropsType {
   width: number;
-  height: number
+  height: number;
+  geoData: any;
 }
 
 function ManyPoint(props: PropsType) {
 
-  let gd = new GeoData(geoData);
+  let gd = new GeoData(props.geoData);
   gd.setPosition(props.height, props.width).setScale(props.height * 0.0003, -props.width * 0.0004);
 
   const containerRef = React.createRef<SVGSVGElement>();
@@ -54,9 +54,13 @@ function ManyPoint(props: PropsType) {
   //Build tooltips
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
+  const onWheelEvent = (event:WheelEvent) => {
+    // console.log(event.deltaY);
+  }
+
   return (
     <main>
-      <svg width={props.width} height={props.height} ref={containerRef}>
+      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent}>
         <g transform={`translate(${props.width * 0.5}, ${props.height * 0.5}) scale(${gd.scaleX}, ${gd.scaleY})`}>
           {regionPaths}
         </g>
