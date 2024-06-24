@@ -9,10 +9,11 @@ interface PropsType {
 }
 
 function ManyPoint(props: PropsType) {
-
+  let moved = false;
   let gd = new GeoData(props.geoData);
   gd.setPosition(props.height, props.width).setScale(props.height * 0.0003, -props.width * 0.0004);
 
+  const [scale, setScale] = React.useState(gd.scaleY);
   const containerRef = React.createRef<SVGSVGElement>();
   const regions:any = gd.geoData.map((data, index) => {
     let colors: any[] = [];
@@ -54,14 +55,33 @@ function ManyPoint(props: PropsType) {
   //Build tooltips
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
-  const onWheelEvent = (event:WheelEvent) => {
-    // console.log(event.deltaY);
+  const onWheelEvent = (event: React.WheelEvent<SVGSVGElement>) => {
+    if (event.deltaY > 0) {
+      gd.setScale(props.height * 0.0003, scale + 0.003);
+      setScale(gd.scaleY);
+    } else {
+      gd.setScale(props.height * 0.0003, scale - 0.003);
+      setScale(gd.scaleY);
+    }
+  }
+
+  const onDragEvent = (e:any) => {
+    console.log(e);
+  }
+
+  const downListener = () => {
+    moved = true
+  }
+  const moveListener = (e:any) => {
+    if (moved) {
+      console.log(e);
+    }
   }
 
   return (
     <main>
-      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent}>
-        <g transform={`translate(${props.width * 0.5}, ${props.height * 0.5}) scale(${gd.scaleX}, ${gd.scaleY})`}>
+      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={downListener} onMouseMove={moveListener} >
+        <g transform={`translate(${350}, ${350}) scale(${scale}, ${scale})`}>
           {regionPaths}
         </g>
         {regionTooltips}
