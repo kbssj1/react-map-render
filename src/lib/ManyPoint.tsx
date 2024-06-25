@@ -10,10 +10,14 @@ interface PropsType {
 
 function ManyPoint(props: PropsType) {
   let moved = false;
+  let mouseDownX = 0;
+  let mouseDownY = 0;
+  //
   let gd = new GeoData(props.geoData);
-  gd.setPosition(props.height, props.width).setScale(props.height * 0.0003, -props.width * 0.0004);
+  gd.setPosition(props.height, props.width).setScale(props.height * 0.0003);
 
-  const [scale, setScale] = React.useState(gd.scaleY);
+  const [transform, setTransform] = React.useState(gd.transform);
+
   const containerRef = React.createRef<SVGSVGElement>();
   const regions:any = gd.geoData.map((data, index) => {
     let colors: any[] = [];
@@ -57,31 +61,39 @@ function ManyPoint(props: PropsType) {
 
   const onWheelEvent = (event: React.WheelEvent<SVGSVGElement>) => {
     if (event.deltaY > 0) {
-      gd.setScale(props.height * 0.0003, scale + 0.003);
-      setScale(gd.scaleY);
+      // setTransform()
+      // gd.setScale(props.height * 0.0003, scale + 0.003);
+      // setScale(gd.scaleY);
     } else {
-      gd.setScale(props.height * 0.0003, scale - 0.003);
-      setScale(gd.scaleY);
+      // gd.setScale(props.height * 0.0003, scale - 0.003);
+      // setScale(gd.scaleY);
     }
   }
 
-  const onDragEvent = (e:any) => {
-    console.log(e);
+  const onDownListener = (e: React.MouseEvent<SVGSVGElement>) => {
+    mouseDownX = e.clientX;
+    mouseDownY = e.clientY;
+    moved = true;
   }
 
-  const downListener = () => {
-    moved = true
+  const onUpListener = () => {
+    moved = false;
   }
-  const moveListener = (e:any) => {
+
+  const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
     if (moved) {
-      console.log(e);
+      console.log("check");
+      if (e.clientX - mouseDownX > 0) {
+        
+        // setDx(dx + 10);
+      }
     }
   }
 
   return (
     <main>
-      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={downListener} onMouseMove={moveListener} >
-        <g transform={`translate(${350}, ${350}) scale(${scale}, ${scale})`}>
+      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
+        <g transform={transform}>
           {regionPaths}
         </g>
         {regionTooltips}

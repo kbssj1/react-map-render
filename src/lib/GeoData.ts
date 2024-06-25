@@ -11,8 +11,8 @@ export class GeoData implements Object {
   private geoDatas:any[] = [];
   public positionX: number = 0;
   public positionY: number = 0;
-  public scaleX: number = 0;
-  public scaleY: number = 0;
+  public scale: number = 0;
+  public transform: string = '';
 
   constructor(geoData: any) {
     geoData.features.map((feature : any) => {
@@ -39,12 +39,13 @@ export class GeoData implements Object {
   public setPosition(positionX:number, positionY:number) {
     this.positionX = positionX;
     this.positionY = positionY;
+    this.transform = `translate(${positionX}, ${positionY}) scale(${this.scale}, ${-this.scale})`;
     return this;
   }
 
-  public setScale(scaleX:number, scaleY:number) {
-    this.scaleX = scaleX;
-    this.scaleY = scaleY;
+  public setScale(scale:number) {
+    this.scale = scale
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${scale}, ${-scale})`;
     return this;
   }
 
