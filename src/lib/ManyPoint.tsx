@@ -14,7 +14,7 @@ function ManyPoint(props: PropsType) {
   let mouseDownY = 0;
   //
   let gd = new GeoData(props.geoData);
-  gd.setPosition(props.height, props.width).setScale(props.height * 0.0003);
+  gd.setPosition(props.height / 2 , props.width / 2).setScale(props.height * 0.0003);
 
   const [transform, setTransform] = React.useState(gd.transform);
 
@@ -76,17 +76,17 @@ function ManyPoint(props: PropsType) {
     moved = true;
   }
 
-  const onUpListener = () => {
+  const onUpListener = (e: React.MouseEvent<SVGSVGElement>) => {
     moved = false;
+    gd.translate(Math.min(e.clientX - mouseDownX, 5.0), 0, () => {
+      setTransform(gd.transform);}
+    , 500);
   }
 
   const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
     if (moved) {
-      console.log("check");
-      if (e.clientX - mouseDownX > 0) {
-        
-        // setDx(dx + 10);
-      }
+      // console.log(Math.min(e.clientX - mouseDownX, 3.0));
+      
     }
   }
 

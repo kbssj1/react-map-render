@@ -2,6 +2,7 @@ import type GeoJSON from "geojson";
 import { SvgPath } from "./SvgPath";
 import { geoMercator, geoPath } from "./d3-geo/index";
 import { Object } from "./Object";
+import { Scheduler } from "./Scheduler";
 
 /**
  * 
@@ -9,6 +10,7 @@ import { Object } from "./Object";
  */
 export class GeoData implements Object {
   private geoDatas:any[] = [];
+  private s:Scheduler = new Scheduler();
   public positionX: number = 0;
   public positionY: number = 0;
   public scale: number = 0;
@@ -39,14 +41,23 @@ export class GeoData implements Object {
   public setPosition(positionX:number, positionY:number) {
     this.positionX = positionX;
     this.positionY = positionY;
-    this.transform = `translate(${positionX}, ${positionY}) scale(${this.scale}, ${-this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
     return this;
   }
 
-  public setScale(scale:number) {
+  public translate(x: number, y: number, callback: Function, time:number=0) {
+    this.s.push('', () => {
+      this.positionX = this.positionX + x;
+      this.positionY = this.positionY + y;
+      this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
+      callback();
+    }, time);
+    this.s.run();
+  }
+
+  public setScale(scale:number, time:number=0) {
     this.scale = scale
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${scale}, ${-scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
     return this;
   }
-
 }
