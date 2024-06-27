@@ -27,7 +27,7 @@ export class Scheduler {
     this.started = true;
     const interval = setInterval(() => {
       s.func();
-      this.t += 50;
+      this.t += 30;
       if (s.time <= this.t) {
         clearInterval(interval);
         this.t = 0;

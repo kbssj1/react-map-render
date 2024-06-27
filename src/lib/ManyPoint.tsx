@@ -8,34 +8,60 @@ interface PropsType {
   geoData: any;
 }
 
+let gd:GeoData;
+
 function ManyPoint(props: PropsType) {
   let moved = false;
   let mouseDownX = 0;
   let mouseDownY = 0;
-  //
-  let gd = new GeoData(props.geoData);
-  gd.setPosition(props.height / 2 , props.width / 2).setScale(props.height * 0.0003);
-
-  const [transform, setTransform] = React.useState(gd.transform);
-
   const containerRef = React.createRef<SVGSVGElement>();
+  //
+
+  React.useEffect(() => {
+    gd = new GeoData(props.geoData);
+    gd.setPosition(props.height / 2 , props.width / 2).setScale(props.height * 0.0003);
+    setTransform(gd.transform);
+  }, []);
+
+  const [transform, setTransform] = React.useState('');
+
+  const onWheelEvent = (event: React.WheelEvent<SVGSVGElement>) => {
+    if (event.deltaY > 0) {
+      gd.setScale(gd.scale + 0.005);
+    } else {
+      gd.setScale(gd.scale - 0.005);
+    }
+    setTransform(gd.transform);
+  }
+
+  const onDownListener = (e: React.MouseEvent<SVGSVGElement>) => {
+    mouseDownX = e.clientX;
+    mouseDownY = e.clientY;
+    moved = true;
+  }
+
+  const onUpListener = (e: React.MouseEvent<SVGSVGElement>) => {
+    moved = false;
+    gd.translate(Math.min(5, Math.max(-5, e.clientX - mouseDownX)), Math.min(5, Math.max(-5, e.clientY - mouseDownY)), () => {
+      setTransform(gd.transform);
+    }, 500);
+  }
+
+  const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (moved) {
+      // console.log(Math.min(e.clientX - mouseDownX, 3.0));
+      
+    }
+  }
+
+  if (!gd)
+    return <div></div>
+   
   const regions:any = gd.geoData.map((data, index) => {
-    let colors: any[] = [];
-    colors.push("#" + "C870E0");
-    colors.push("#" + "6E5FD3");
-    colors.push("#" + "5079F9");
-    colors.push("#" + "7BE276");
-    colors.push("#" + "EBED68");
-    colors.push("#" + "EBBA54");
-    colors.push("#" + "F06976");
-    colors.push("#" + "8D3047");
-    colors.push("#" + "F8F1EF");
-    colors.push("#" + "F4FAF8");
     const triggerRef = React.createRef<SVGPathElement>();
-    
     const path = (
       <path
-        fill={colors[index % 10]}
+        fill={gd.colors[index % 10]}
         d={data.path}
         ref={triggerRef}
         key={index}
@@ -58,37 +84,6 @@ function ManyPoint(props: PropsType) {
     
   //Build tooltips
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
-
-  const onWheelEvent = (event: React.WheelEvent<SVGSVGElement>) => {
-    if (event.deltaY > 0) {
-      // setTransform()
-      // gd.setScale(props.height * 0.0003, scale + 0.003);
-      // setScale(gd.scaleY);
-    } else {
-      // gd.setScale(props.height * 0.0003, scale - 0.003);
-      // setScale(gd.scaleY);
-    }
-  }
-
-  const onDownListener = (e: React.MouseEvent<SVGSVGElement>) => {
-    mouseDownX = e.clientX;
-    mouseDownY = e.clientY;
-    moved = true;
-  }
-
-  const onUpListener = (e: React.MouseEvent<SVGSVGElement>) => {
-    moved = false;
-    gd.translate(Math.min(e.clientX - mouseDownX, 5.0), 0, () => {
-      setTransform(gd.transform);}
-    , 500);
-  }
-
-  const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (moved) {
-      // console.log(Math.min(e.clientX - mouseDownX, 3.0));
-      
-    }
-  }
 
   return (
     <main>

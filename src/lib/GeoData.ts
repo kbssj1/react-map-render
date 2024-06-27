@@ -4,6 +4,12 @@ import { geoMercator, geoPath } from "./d3-geo/index";
 import { Object } from "./Object";
 import { Scheduler } from "./Scheduler";
 
+interface ISomeCoolInterface {
+  some: 'string';
+  cool: 'string';
+  props: 'string' 
+}  
+
 /**
  * 
  * 
@@ -11,6 +17,7 @@ import { Scheduler } from "./Scheduler";
 export class GeoData implements Object {
   private geoDatas:any[] = [];
   private s:Scheduler = new Scheduler();
+  public colors:string[] = [];
   public positionX: number = 0;
   public positionY: number = 0;
   public scale: number = 0;
@@ -32,7 +39,19 @@ export class GeoData implements Object {
       let path = new SvgPath(geoFeature.geometry);
       this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME});
     });
+    //
+    this.colors.push("#" + "C870E0");
+    this.colors.push("#" + "6E5FD3");
+    this.colors.push("#" + "5079F9");
+    this.colors.push("#" + "7BE276");
+    this.colors.push("#" + "EBED68");
+    this.colors.push("#" + "EBBA54");
+    this.colors.push("#" + "F06976");
+    this.colors.push("#" + "8D3047");
+    this.colors.push("#" + "F8F1EF");
+    this.colors.push("#" + "F4FAF8");
   }
+  
 
   public get geoData() {
     return this.geoDatas;
