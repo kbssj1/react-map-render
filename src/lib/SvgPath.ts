@@ -21,10 +21,10 @@ export class SvgPath {
   }
 
   private addPath(x: number, y: number) {
-    x *= 10;
-    y *= 10;
-    x = Math.round(x);
-    y = Math.round(y);
+    const k = 10000;
+    // x += k / (k + x);
+    // y += k / (k + y);
+
     switch (this.d) {
       case 0: {
         this.pathStr += `M${x},${y}`;

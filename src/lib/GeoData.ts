@@ -26,16 +26,15 @@ export class GeoData implements Object {
   constructor(geoData: any) {
     geoData.features.map((feature : any) => {
 
-      const { I: isoCode, N: countryName, C: coordinates } = feature;
+      // const { I: isoCode, N: countryName, C: coordinates } = feature;
       const geoFeature: GeoJSON.Feature = {
         type: "Feature",
-        properties: { NAME: countryName, ISO_A2: isoCode },
+        properties: { NAME: feature.properties.행정동명 },
         geometry: {
           type: "MultiPolygon",
-          coordinates: coordinates as GeoJSON.Position[][][],
+          coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
         },
       };
-
       let path = new SvgPath(geoFeature.geometry);
       this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME});
     });
@@ -60,23 +59,26 @@ export class GeoData implements Object {
   public setPosition(positionX:number, positionY:number) {
     this.positionX = positionX;
     this.positionY = positionY;
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
     return this;
   }
 
-  public translate(x: number, y: number, callback: Function, time:number=0) {
+  public translate(x: number, y: number, time:number=0) {
+    /*
     this.s.push('', () => {
-      this.positionX = this.positionX + x;
-      this.positionY = this.positionY + y;
-      this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
+
       callback();
     }, time);
     this.s.run();
+    */
+    this.positionX = this.positionX + x;
+    this.positionY = this.positionY + y;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
   }
 
   public setScale(scale:number, time:number=0) {
     this.scale = scale
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${-this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
     return this;
   }
 }
