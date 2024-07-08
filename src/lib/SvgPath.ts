@@ -21,9 +21,22 @@ export class SvgPath {
   }
 
   private addPath(x: number, y: number) {
-    const k = 10000;
-    // x += k / (k + x);
-    // y += k / (k + y);
+
+    function interpolator(a:Number, b:Number, t:Number) {
+      return +a * (1 - +t) + +b * +t;
+    }
+
+    // const k = 10000;
+    const max = 127.5;
+    const min = 126.5;
+
+    x = (x - min) / (max-min);
+    y = (y - 37) / (37 - 36);
+    x = interpolator(0, 1000, x);
+    y = interpolator(0, 700, y);
+    // y = (y - min) / (max-min);
+    // x *= 0.1;
+    // y *= 0.1;
 
     switch (this.d) {
       case 0: {
