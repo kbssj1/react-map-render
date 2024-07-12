@@ -17,16 +17,14 @@ let scale = 1;
 const svgSize = {w:1200,h:700};
 
 function ManyPoint(props: PropsType) {
-  let moved = false;
   const containerRef = React.createRef<SVGSVGElement>();
   const [transform, setTransform] = React.useState('');
-  const [viewBox, setViewBox] = React.useState({x:0,y:0,w:1200,h:700});
   //
 
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
     const v = 5.5;
-    gd.setPosition(30, 0).setScale(1);
+    gd.setPosition(10, 0).setScale(1);
     // gd.setPosition(-3500, -1000).setScale(30);
     // gd.setPosition(-50, 0).setScale(1);
     setTransform(gd.transform);
@@ -34,19 +32,28 @@ function ManyPoint(props: PropsType) {
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
     // e.preventDefault();
-    var w = viewBox.w;
-    var h = viewBox.h;
+    var w = svgSize.w;
+    var h = svgSize.h;
     var mx = e.screenX;//mouse x  
     var my = e.screenY;    
-    var dw = w*Math.sign(e.deltaY)*0.05;
-    var dh = h*Math.sign(e.deltaY)*0.05;
-    var dx = dw*mx/svgSize.w;
-    var dy = dh*my/svgSize.h;
-    const _viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
-    scale = svgSize.w/viewBox.w;
+    var dw = w*Math.sign(e.deltaY)*0.0001;
+    var dh = h*Math.sign(e.deltaY)*0.0001;
+    var dx = dw*mx/svgSize.w * 800;
+    var dy = dh*my/svgSize.h * 800;
+    // const _viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
+    /*
     setViewBox((prevState) => {
     	return { ..._viewBox }
     });
+    */
+    // console.log('transform : ' + transform);
+    // console.log('mx : ' + mx);
+    // console.log('my : ' + my);
+    // console.log('dx : ' + dx);
+    // console.log('dy : ' + dy);
+    gd.setScale(gd.scale + dw);
+    gd.translate(-dx, -dy);
+    setTransform(gd.transform);
   }
 
   const onDownListener = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -66,26 +73,20 @@ function ManyPoint(props: PropsType) {
       endPoint = {x:e.screenX,y:e.screenY};
       var dx = (startPoint.x - endPoint.x)/scale;
       var dy = (startPoint.y - endPoint.y)/scale;
-      const _viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
-      setViewBox((prevState) => {
-        return { ..._viewBox }
-      });
+      gd.translate(-dx, -dy);
+      setTransform(gd.transform);
       isPanning = false;
     }
   }
 
   const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (moved) {
-      // console.log(Math.min(e.clientX - mouseDownX, 3.0));
-    }
     if (isPanning){
       endPoint = {x:e.screenX,y:e.screenY};
       var dx = (startPoint.x - endPoint.x)/scale;
       var dy = (startPoint.y - endPoint.y)/scale;
-      var movedViewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w,h:viewBox.h};
-      setViewBox((prevState) => {
-        return { ...movedViewBox }
-      });
+      console.log(dx)
+      gd.translate(-dx, -dy);
+      setTransform(gd.transform);
     }
   }
 
@@ -122,10 +123,11 @@ function ManyPoint(props: PropsType) {
 
   return (
     <main>
-      <svg viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`} width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
+      <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
         <g transform={transform}>
           {regionPaths}
         </g>
+        {regionTooltips}
       </svg>
     </main>
   );
