@@ -1,3 +1,5 @@
+import { Position } from "geojson";
+
 /** 
  *  https://github.com/d3/d3-geo/blob/main/src/path/string.js
  */
@@ -5,8 +7,10 @@ export class SvgPath {
 
   private d: number = 0;
   private pathStr: string = '';
+  private _center: Position = [0,0];
 
   constructor(geometry: any) {
+
     let coordinates = geometry.coordinates;
     for (let i=0;i<coordinates.length;++i) {
       let coordinate = coordinates[i];
@@ -37,7 +41,7 @@ export class SvgPath {
     // y = (y - min) / (max-min);
     // x *= 0.1;
     // y *= 0.1;
-
+    this._center = [x, y];
     switch (this.d) {
       case 0: {
         this.pathStr += `M${x},${y}`;
@@ -53,5 +57,9 @@ export class SvgPath {
 
   public get path() {
     return this.pathStr;
+  }
+
+  public get center() {
+    return this._center;
   }
 }

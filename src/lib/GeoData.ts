@@ -1,14 +1,8 @@
 import type GeoJSON from "geojson";
 import { SvgPath } from "./SvgPath";
-import { geoMercator, geoPath } from "./d3-geo/index";
+import { Position } from "geojson";
 import { Object } from "./Object";
 import { Scheduler } from "./Scheduler";
-
-interface ISomeCoolInterface {
-  some: 'string';
-  cool: 'string';
-  props: 'string' 
-}  
 
 /**
  * 
@@ -22,6 +16,7 @@ export class GeoData implements Object {
   public positionY: number = 0;
   public scale: number = 0;
   public transform: string = '';
+  public c: {[key:string]:Position} = {};
 
   constructor(geoData: any) {
     geoData.features.map((feature : any) => {
@@ -36,7 +31,8 @@ export class GeoData implements Object {
         },
       };
       let path = new SvgPath(geoFeature.geometry);
-      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME});
+      this.c[geoFeature.properties?.adm_cd] = path.center;
+      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, adm_cd: geoFeature.properties?.adm_cd});
     });
     //
     this.colors.push("#" + "C870E0");
@@ -47,7 +43,7 @@ export class GeoData implements Object {
     this.colors.push("#" + "EBBA54");
     this.colors.push("#" + "F06976");
     this.colors.push("#" + "8D3047");
-    this.colors.push("#" + "F8F1EF");
+    this.colors.push("#" + "F800EF");
     this.colors.push("#" + "F4FAF8");
   }
   

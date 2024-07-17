@@ -1,7 +1,6 @@
 import { GeoData } from "@/lib/GeoData";
 import * as React from 'react';
 import { PathTooltip } from "@/app/tooltip";
-// import { scaleLinear } from "@/lib/d3-scale/index";
 
 interface PropsType {
   width: number;
@@ -14,7 +13,16 @@ let isPanning = false;
 let startPoint = {x:0,y:0};
 let endPoint = {x:0,y:0};
 let scale = 1;
-const svgSize = {w:1200,h:700};
+const svgSize = {w:600,h:400};
+
+const testValue: {[key:string]:number} = {
+  '0': 1101053,
+  '1': 1101054,
+  '2': 1101055,
+  '3': 1101056,
+  '4': 1101057,
+  '5': 1101058
+}
 
 function ManyPoint(props: PropsType) {
   const containerRef = React.createRef<SVGSVGElement>();
@@ -24,11 +32,16 @@ function ManyPoint(props: PropsType) {
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
     const v = 5.5;
-    gd.setPosition(10, 0).setScale(1);
+    gd.setPosition(-200, -200).setScale(1);
     // gd.setPosition(-3500, -1000).setScale(30);
     // gd.setPosition(-50, 0).setScale(1);
     setTransform(gd.transform);
   }, []);
+
+  const onInput = (e:any) => {
+    const v:string = e.target.value
+    console.log(testValue[v]);
+  }
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
     // e.preventDefault();
@@ -84,7 +97,6 @@ function ManyPoint(props: PropsType) {
       endPoint = {x:e.screenX,y:e.screenY};
       var dx = (startPoint.x - endPoint.x)/scale;
       var dy = (startPoint.y - endPoint.y)/scale;
-      console.log(dx)
       gd.translate(-dx, -dy);
       setTransform(gd.transform);
     }
@@ -122,13 +134,14 @@ function ManyPoint(props: PropsType) {
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
   return (
-    <main>
+    <main style={{display : "flex", flexDirection: "column"}}>
       <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
         <g transform={transform}>
           {regionPaths}
         </g>
         {regionTooltips}
       </svg>
+      <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="10" onInput={onInput} />
     </main>
   );
 }

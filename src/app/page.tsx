@@ -8,7 +8,7 @@ export default function Home() {
 
   return (
     <main>
-      <ManyPoint width={1200} height={700} geoData={seoulGeoData} />
+      <ManyPoint width={600} height={400} geoData={seoulGeoData} />
     </main>
   );
 }
