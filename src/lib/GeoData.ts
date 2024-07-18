@@ -16,7 +16,7 @@ export class GeoData implements Object {
   public positionY: number = 0;
   public scale: number = 0;
   public transform: string = '';
-  public c: {[key:string]:Position} = {};
+  public centers: {[key:string]:Position} = {};
 
   constructor(geoData: any) {
     geoData.features.map((feature : any) => {
@@ -24,16 +24,17 @@ export class GeoData implements Object {
       // const { I: isoCode, N: countryName, C: coordinates } = feature;
       const geoFeature: GeoJSON.Feature = {
         type: "Feature",
-        properties: { NAME: feature.properties.행정동명 },
+        properties: { NAME: feature.properties.행정동명, id: feature.properties.행정동코드 },
         geometry: {
           type: "MultiPolygon",
           coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
         },
       };
       let path = new SvgPath(geoFeature.geometry);
-      this.c[geoFeature.properties?.adm_cd] = path.center;
-      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, adm_cd: geoFeature.properties?.adm_cd});
+      this.centers[geoFeature.properties?.id] = path.center;
+      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, id: geoFeature.properties?.id});
     });
+    // console.log(this.centers);
     //
     this.colors.push("#" + "C870E0");
     this.colors.push("#" + "6E5FD3");
@@ -55,7 +56,7 @@ export class GeoData implements Object {
   public setPosition(positionX:number, positionY:number) {
     this.positionX = positionX;
     this.positionY = positionY;
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale})`;
     return this;
   }
 
@@ -69,12 +70,12 @@ export class GeoData implements Object {
     */
     this.positionX = this.positionX + x;
     this.positionY = this.positionY + y;
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale})`;
   }
 
   public setScale(scale:number, time:number=0) {
     this.scale = scale
-    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale}, ${this.scale})`;
+    this.transform = `translate(${this.positionX}, ${this.positionY}) scale(${this.scale})`;
     return this;
   }
 }

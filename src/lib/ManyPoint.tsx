@@ -16,12 +16,12 @@ let scale = 1;
 const svgSize = {w:600,h:400};
 
 const testValue: {[key:string]:number} = {
-  '0': 1101053,
-  '1': 1101054,
-  '2': 1101055,
-  '3': 1101056,
-  '4': 1101057,
-  '5': 1101058
+  '0': 11110510,
+  '1': 11110520,
+  '2': 11110530,
+  '3': 11110540,
+  '4': 11110550,
+  '5': 11110560
 }
 
 function ManyPoint(props: PropsType) {
@@ -32,7 +32,7 @@ function ManyPoint(props: PropsType) {
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
     const v = 5.5;
-    gd.setPosition(-200, -200).setScale(1);
+    gd.setPosition(-100, 500).setScale(1);
     // gd.setPosition(-3500, -1000).setScale(30);
     // gd.setPosition(-50, 0).setScale(1);
     setTransform(gd.transform);
@@ -40,7 +40,8 @@ function ManyPoint(props: PropsType) {
 
   const onInput = (e:any) => {
     const v:string = e.target.value
-    console.log(testValue[v]);
+    // console.log(v);
+    console.log(gd.centers[testValue[v]]);
   }
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
@@ -141,7 +142,7 @@ function ManyPoint(props: PropsType) {
         </g>
         {regionTooltips}
       </svg>
-      <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="10" onInput={onInput} />
+      <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="5" onInput={onInput} />
     </main>
   );
 }

@@ -17,7 +17,7 @@ export class SvgPath {
       for (let i2=0;i2<coordinate.length;++i2) {
         let xy = coordinate[i2];
         for (let i3=0;i3<xy.length;++i3) {
-          this.addPath(xy[i3][0], xy[i3][1]);
+          this.addPath(xy[i3][0], -xy[i3][1]);
         }
         this.pathStr += "Z";
       }
@@ -35,7 +35,7 @@ export class SvgPath {
     const min = 126.5;
 
     x = (x - min) / (max-min);
-    y = (y - 37) / (37 - 36);
+    y = (y + 37) / (37 - 36);
     x = interpolator(0, 1000, x);
     y = interpolator(0, 700, y);
     // y = (y - min) / (max-min);
