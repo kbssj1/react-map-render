@@ -1,6 +1,6 @@
-import { GeoData } from "@/lib/GeoData";
+import { GeoData } from "@/lib/core/GeoData";
 import * as React from 'react';
-import { PathTooltip } from "@/app/tooltip";
+import { PathTooltip } from "@/lib/ui/tooltip";
 
 interface PropsType {
   width: number;
@@ -31,10 +31,7 @@ function ManyPoint(props: PropsType) {
 
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
-    const v = 5.5;
     gd.setPosition(-100, 500).setScale(1);
-    // gd.setPosition(-3500, -1000).setScale(30);
-    // gd.setPosition(-50, 0).setScale(1);
     setTransform(gd.transform);
   }, []);
 
@@ -45,15 +42,15 @@ function ManyPoint(props: PropsType) {
   }
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
-    // e.preventDefault();
+    e.preventDefault();
     var w = svgSize.w;
     var h = svgSize.h;
     var mx = e.screenX;//mouse x  
     var my = e.screenY;    
-    var dw = w*Math.sign(e.deltaY)*0.0001;
-    var dh = h*Math.sign(e.deltaY)*0.0001;
-    var dx = dw*mx/svgSize.w * 800;
-    var dy = dh*my/svgSize.h * 800;
+    var dw = w*Math.sign(e.deltaY)*0.00005;
+    var dh = h*Math.sign(e.deltaY)*0.00005;
+    var dx = dw*mx/svgSize.w * 500;
+    var dy = dh*my/svgSize.h * 500;
     // const _viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
     /*
     setViewBox((prevState) => {

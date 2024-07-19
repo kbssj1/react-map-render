@@ -45,7 +45,7 @@ export class GeoData implements Object {
     this.colors.push("#" + "F06976");
     this.colors.push("#" + "8D3047");
     this.colors.push("#" + "F800EF");
-    this.colors.push("#" + "F4FAF8");
+    this.colors.push("#" + "F400F8");
   }
   
 
