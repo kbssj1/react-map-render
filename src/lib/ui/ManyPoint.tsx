@@ -15,13 +15,9 @@ let endPoint = {x:0,y:0};
 let scale = 1;
 const svgSize = {w:600,h:400};
 
-const testValue: {[key:string]:number} = {
-  '0': 11110510,
-  '1': 11110520,
-  '2': 11110530,
-  '3': 11110540,
-  '4': 11110550,
-  '5': 11110560
+const testValue: {[key:number]:string} = {
+  '11110520': '경복궁',
+  '11170520': '전쟁기념박물관',
 }
 
 function ManyPoint(props: PropsType) {
@@ -32,11 +28,12 @@ function ManyPoint(props: PropsType) {
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
     gd.setPosition(-100, 500).setScale(1);
+    gd.colors = ['#ced4da'];
     setTransform(gd.transform);
   }, []);
 
   const onInput = (e:any) => {
-    const v:string = e.target.value
+    const v:number = e.target.value
     // console.log(v);
     console.log(gd.centers[testValue[v]]);
   }
@@ -107,10 +104,12 @@ function ManyPoint(props: PropsType) {
     const triggerRef = React.createRef<SVGPathElement>();
     const path = (
       <path
-        fill={gd.colors[index % 10]}
+        fill={gd.colors[0]}
         d={data.path}
         ref={triggerRef}
         key={index}
+        stroke="#212529"
+        strokeWidth={1}
       />
     );
     const tooltip = (
@@ -139,7 +138,7 @@ function ManyPoint(props: PropsType) {
         </g>
         {regionTooltips}
       </svg>
-      <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="5" onInput={onInput} />
+      {/* <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="5" onInput={onInput} /> */}
     </main>
   );
 }

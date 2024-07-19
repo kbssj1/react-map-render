@@ -1,7 +1,7 @@
 'use client';
 
 import ManyPoint from "@/lib/ui/ManyPoint";
-import seoulGeoData from "../lib/d3-geo/seoul.geo";
+import seoulGeoData from "../lib/geojson/seoul.geo";
 
 export default function Home() {
 

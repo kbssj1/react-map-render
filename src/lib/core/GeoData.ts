@@ -11,7 +11,7 @@ import { Scheduler } from "./Scheduler";
 export class GeoData implements Object {
   private geoDatas:any[] = [];
   private s:Scheduler = new Scheduler();
-  public colors:string[] = [];
+  private _colors:string[] = [];
   public positionX: number = 0;
   public positionY: number = 0;
   public scale: number = 0;
@@ -34,8 +34,7 @@ export class GeoData implements Object {
       this.centers[geoFeature.properties?.id] = path.center;
       this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, id: geoFeature.properties?.id});
     });
-    // console.log(this.centers);
-    //
+    /*
     this.colors.push("#" + "C870E0");
     this.colors.push("#" + "6E5FD3");
     this.colors.push("#" + "5079F9");
@@ -46,6 +45,15 @@ export class GeoData implements Object {
     this.colors.push("#" + "8D3047");
     this.colors.push("#" + "F800EF");
     this.colors.push("#" + "F400F8");
+    */
+  }
+
+  public get colors() {
+    return this._colors;
+  }
+
+  public set colors(colors:string[]) {
+    this._colors = colors;
   }
   
 
