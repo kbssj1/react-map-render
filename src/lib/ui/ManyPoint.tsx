@@ -27,19 +27,23 @@ function ManyPoint(props: PropsType) {
 
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
-    gd.setPosition(-100, 500).setScale(1);
+    gd.setPosition(-100, 50).setScale(1);
     gd.colors = ['#ced4da'];
     setTransform(gd.transform);
+    //
+    setTimeout(() => {
+      // let myCircle = document.createElementNS("http://www.w3.org/2000/svg","circle"); //to create a circle. for rectangle use "rectangle"
+      // myCircle.setAttributeNS(null,"id","mycircle");
+      // myCircle.setAttributeNS(null,"cx", String(gd.centers['11110520'][0]));
+      // myCircle.setAttributeNS(null,"cy", String(gd.centers['11110520'][1]));
+      // myCircle.setAttributeNS(null,"r",'10');
+      // myCircle.setAttributeNS(null,"fill","black");
+      // myCircle.setAttributeNS(null,"stroke","none");
+      // const map = document.getElementById("map")?.appendChild(myCircle);
+    }, 100);
   }, []);
-
-  const onInput = (e:any) => {
-    const v:number = e.target.value
-    // console.log(v);
-    console.log(gd.centers[testValue[v]]);
-  }
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
-    e.preventDefault();
     var w = svgSize.w;
     var h = svgSize.h;
     var mx = e.screenX;//mouse x  
@@ -130,15 +134,35 @@ function ManyPoint(props: PropsType) {
   //Build tooltips
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
+  const r = React.createRef<SVGCircleElement>(); 
+  const marker = (
+    <circle
+      cx={String(gd.centers['11110520'][0])}
+      cy={String(gd.centers['11110520'][1])}
+      fill="yellow"
+      r={5}
+      ref={r}
+    />
+  );
+  const t = (
+    <PathTooltip
+      key={1000}
+      pathRef={r}
+      tip={"경복궁"}
+      svgRef={containerRef}
+    />
+  )
+
   return (
     <main style={{display : "flex", flexDirection: "column"}}>
       <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
         <g transform={transform}>
           {regionPaths}
+          {marker}
         </g>
         {regionTooltips}
+        {t}
       </svg>
-      {/* <input style={{width: '600px', padding: '10px'}} type="range" min="0" max="5" onInput={onInput} /> */}
     </main>
   );
 }

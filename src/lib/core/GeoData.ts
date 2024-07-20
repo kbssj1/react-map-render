@@ -55,7 +55,7 @@ export class GeoData implements Object {
   public set colors(colors:string[]) {
     this._colors = colors;
   }
-  
+
 
   public get geoData() {
     return this.geoDatas;

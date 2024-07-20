@@ -37,7 +37,7 @@ export class SvgPath {
     x = (x - min) / (max-min);
     y = (y + 37) / (37 - 36);
     x = interpolator(0, 1000, x);
-    y = interpolator(0, 700, y);
+    y = interpolator(0, 700, y) + 500;
     // y = (y - min) / (max-min);
     // x *= 0.1;
     // y *= 0.1;
