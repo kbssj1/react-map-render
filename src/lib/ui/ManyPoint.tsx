@@ -27,7 +27,7 @@ function ManyPoint(props: PropsType) {
 
   React.useEffect(() => {
     gd = new GeoData(props.geoData);
-    gd.setPosition(-100, 50).setScale(1);
+    gd.setPosition(0, 0).setScale(1);
     gd.colors = ['#ced4da'];
     setTransform(gd.transform);
     //

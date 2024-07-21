@@ -3,6 +3,7 @@ import { SvgPath } from "./SvgPath";
 import { Position } from "geojson";
 import { Object } from "./Object";
 import { Scheduler } from "./Scheduler";
+import { MinMaxTest } from "./minMaxTest";
 
 /**
  * 
@@ -19,6 +20,22 @@ export class GeoData implements Object {
   public centers: {[key:string]:Position} = {};
 
   constructor(geoData: any) {
+    //
+    let m =new MinMaxTest();
+    geoData.features.map((feature : any) => {
+      // const { I: isoCode, N: countryName, C: coordinates } = feature;
+      const geoFeature: GeoJSON.Feature = {
+        type: "Feature",
+        properties: { NAME: feature.properties.행정동명, id: feature.properties.행정동코드 },
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
+        },
+      };
+      m.push(geoFeature.geometry);
+    });
+    m.calaulte();
+    //
     geoData.features.map((feature : any) => {
 
       // const { I: isoCode, N: countryName, C: coordinates } = feature;
@@ -30,10 +47,11 @@ export class GeoData implements Object {
           coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
         },
       };
-      let path = new SvgPath(geoFeature.geometry);
+      let path = new SvgPath(geoFeature.geometry, m.minMax);
       this.centers[geoFeature.properties?.id] = path.center;
       this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, id: geoFeature.properties?.id});
     });
+    
     /*
     this.colors.push("#" + "C870E0");
     this.colors.push("#" + "6E5FD3");
