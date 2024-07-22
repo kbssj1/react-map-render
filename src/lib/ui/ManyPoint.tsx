@@ -1,11 +1,14 @@
 import { GeoData } from "@/lib/core/GeoData";
 import * as React from 'react';
 import { PathTooltip } from "@/lib/ui/tooltip";
+import { Mark } from "../core/Mark";
 
 interface PropsType {
   width: number;
   height: number;
   geoData: any;
+  propertyKey: string;
+  marks: Mark[];
 }
 
 let gd:GeoData;
@@ -15,32 +18,16 @@ let endPoint = {x:0,y:0};
 let scale = 1;
 const svgSize = {w:600,h:400};
 
-const testValue: {[key:number]:string} = {
-  '11110520': '경복궁',
-  '11170520': '전쟁기념박물관',
-}
-
 function ManyPoint(props: PropsType) {
   const containerRef = React.createRef<SVGSVGElement>();
   const [transform, setTransform] = React.useState('');
   //
 
   React.useEffect(() => {
-    gd = new GeoData(props.geoData);
+    gd = new GeoData(props.geoData, props.propertyKey, props.marks);
     gd.setPosition(0, 0).setScale(1);
     gd.colors = ['#ced4da'];
     setTransform(gd.transform);
-    //
-    setTimeout(() => {
-      // let myCircle = document.createElementNS("http://www.w3.org/2000/svg","circle"); //to create a circle. for rectangle use "rectangle"
-      // myCircle.setAttributeNS(null,"id","mycircle");
-      // myCircle.setAttributeNS(null,"cx", String(gd.centers['11110520'][0]));
-      // myCircle.setAttributeNS(null,"cy", String(gd.centers['11110520'][1]));
-      // myCircle.setAttributeNS(null,"r",'10');
-      // myCircle.setAttributeNS(null,"fill","black");
-      // myCircle.setAttributeNS(null,"stroke","none");
-      // const map = document.getElementById("map")?.appendChild(myCircle);
-    }, 100);
   }, []);
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
@@ -105,27 +92,50 @@ function ManyPoint(props: PropsType) {
     return <div></div>
    
   const regions:any = gd.geoData.map((data, index) => {
-    const triggerRef = React.createRef<SVGPathElement>();
-    const path = (
-      <path
-        fill={gd.colors[0]}
-        d={data.path}
-        ref={triggerRef}
-        key={index}
-        stroke="#212529"
-        strokeWidth={1}
-      />
-    );
-    const tooltip = (
-      <PathTooltip
-        key={index}
-        pathRef={triggerRef}
-        tip={data.countryName}
-        svgRef={containerRef}
-      />
-    )
     
-    return { path, highlightedTooltip: tooltip };
+    if (data instanceof Mark) {
+      const triggerRef = React.createRef<SVGCircleElement>();
+      const path = (
+        <circle
+          cx={String(data.center[0])}
+          cy={String(data.center[1])}
+          key={index}
+          fill="yellow"
+          r={5}
+          ref={triggerRef}
+        />
+      );
+      const tooltip = (
+        <PathTooltip
+          key={index}
+          pathRef={triggerRef}
+          tip={data.name}
+          svgRef={containerRef}
+        />
+      )
+      return { path, highlightedTooltip: tooltip };
+    } else {
+      const triggerRef = React.createRef<SVGPathElement>();
+      const path = (
+        <path
+          fill={gd.colors[0]}
+          d={data.path}
+          ref={triggerRef}
+          key={index}
+          stroke="#212529"
+          strokeWidth={1}
+        />
+      );
+      const tooltip = (
+        <PathTooltip
+          key={index}
+          pathRef={triggerRef}
+          tip={data.name}
+          svgRef={containerRef}
+        />
+      )
+      return { path, highlightedTooltip: tooltip };
+    }
   });
 
   // Build paths
@@ -134,36 +144,15 @@ function ManyPoint(props: PropsType) {
   //Build tooltips
   const regionTooltips = regions.map((entry:any) => entry.highlightedTooltip);
 
-  const r = React.createRef<SVGCircleElement>(); 
-  const marker = (
-    <circle
-      cx={String(gd.centers['11110520'][0])}
-      cy={String(gd.centers['11110520'][1])}
-      fill="yellow"
-      r={5}
-      ref={r}
-    />
-  );
-  const t = (
-    <PathTooltip
-      key={1000}
-      pathRef={r}
-      tip={"경복궁"}
-      svgRef={containerRef}
-    />
-  )
-
   return (
-    <main style={{display : "flex", flexDirection: "column"}}>
+    <>
       <svg width={props.width} height={props.height} ref={containerRef} onWheel={onWheelEvent} onMouseDown={onDownListener} onMouseMove={moveListener} onMouseUp={onUpListener} >
         <g transform={transform}>
           {regionPaths}
-          {marker}
         </g>
         {regionTooltips}
-        {t}
       </svg>
-    </main>
+    </>
   );
 }
 

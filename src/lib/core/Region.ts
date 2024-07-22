@@ -3,9 +3,10 @@ import { BBox, Position } from "geojson";
 /** 
  *  https://github.com/d3/d3-geo/blob/main/src/path/string.js
  */
-export class SvgPath {
+export class Region {
 
   private d: number = 0;
+  private _name: string = '';
   private _path: string = '';
   private _center: Position = [0,0];
   private _minMax: BBox = [0, 0, 0, 0];
@@ -59,5 +60,13 @@ export class SvgPath {
 
   public get center() {
     return this._center;
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  public set name(name: string) {
+    this._name = name;
   }
 }

@@ -1,32 +1,30 @@
 import type GeoJSON from "geojson";
-import { SvgPath } from "./SvgPath";
-import { Position } from "geojson";
+import { Region } from "./Region";
 import { Object } from "./Object";
 import { Scheduler } from "./Scheduler";
 import { MinMaxTest } from "./minMaxTest";
+import { Mark } from "./Mark";
 
 /**
  * 
  * 
  */
 export class GeoData implements Object {
-  private geoDatas:any[] = [];
+  private geoDatas:(Mark|Region)[] = [];
   private s:Scheduler = new Scheduler();
   private _colors:string[] = [];
+  private _propertyKey:string;
   public positionX: number = 0;
   public positionY: number = 0;
   public scale: number = 0;
   public transform: string = '';
-  public centers: {[key:string]:Position} = {};
 
-  constructor(geoData: any) {
+  constructor(geoData: any, propertyKey: string, mark: Mark[]) {
+    this._propertyKey = propertyKey; 
     //
     let m =new MinMaxTest();
     geoData.features.map((feature : any) => {
-      // const { I: isoCode, N: countryName, C: coordinates } = feature;
-      const geoFeature: GeoJSON.Feature = {
-        type: "Feature",
-        properties: { NAME: feature.properties.행정동명, id: feature.properties.행정동코드 },
+      const geoFeature: any = {
         geometry: {
           type: "MultiPolygon",
           coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
@@ -37,33 +35,30 @@ export class GeoData implements Object {
     m.calaulte();
     //
     geoData.features.map((feature : any) => {
-
-      // const { I: isoCode, N: countryName, C: coordinates } = feature;
       const geoFeature: GeoJSON.Feature = {
         type: "Feature",
-        properties: { NAME: feature.properties.행정동명, id: feature.properties.행정동코드 },
+        properties: { NAME: feature.properties.행정동명, id: feature.properties[this._propertyKey] },
         geometry: {
           type: "MultiPolygon",
           coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
         },
       };
-      let path = new SvgPath(geoFeature.geometry, m.minMax);
-      this.centers[geoFeature.properties?.id] = path.center;
-      this.geoDatas.push({path:path.path, countryName: geoFeature.properties?.NAME, id: geoFeature.properties?.id});
+      let path = new Region(geoFeature.geometry, m.minMax);
+      path.name = geoFeature.properties?.NAME;
+      for (let i=0;i<Mark.length;++i) {
+        // console.log(mark[i].regionKey);
+        // console.log(geoFeature.properties?.id);
+        // console.log('-----');
+        if (mark[i].regionKey === geoFeature.properties?.id) {
+          mark[i].center = path.center;
+        }
+      }
+      this.geoDatas.push(path);
     });
-    
-    /*
-    this.colors.push("#" + "C870E0");
-    this.colors.push("#" + "6E5FD3");
-    this.colors.push("#" + "5079F9");
-    this.colors.push("#" + "7BE276");
-    this.colors.push("#" + "EBED68");
-    this.colors.push("#" + "EBBA54");
-    this.colors.push("#" + "F06976");
-    this.colors.push("#" + "8D3047");
-    this.colors.push("#" + "F800EF");
-    this.colors.push("#" + "F400F8");
-    */
+    //
+    for (let i=0;i<Mark.length;++i) {
+      this.geoDatas.push(mark[i]);
+    }
   }
 
   public get colors() {
@@ -74,9 +69,25 @@ export class GeoData implements Object {
     this._colors = colors;
   }
 
+  private addDefaultColors() {
+    this.colors.push("#" + "C870E0");
+    this.colors.push("#" + "6E5FD3");
+    this.colors.push("#" + "5079F9");
+    this.colors.push("#" + "7BE276");
+    this.colors.push("#" + "EBED68");
+    this.colors.push("#" + "EBBA54");
+    this.colors.push("#" + "F06976");
+    this.colors.push("#" + "8D3047");
+    this.colors.push("#" + "F800EF");
+    this.colors.push("#" + "F400F8");
+  }
 
   public get geoData() {
     return this.geoDatas;
+  }
+
+  public get property() {
+    return this._propertyKey;
   }
 
   public setPosition(positionX:number, positionY:number) {
