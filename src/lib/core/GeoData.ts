@@ -45,10 +45,7 @@ export class GeoData implements Object {
       };
       let path = new Region(geoFeature.geometry, m.minMax);
       path.name = geoFeature.properties?.NAME;
-      for (let i=0;i<Mark.length;++i) {
-        // console.log(mark[i].regionKey);
-        // console.log(geoFeature.properties?.id);
-        // console.log('-----');
+      for (let i=0;i<mark.length;++i) {
         if (mark[i].regionKey === geoFeature.properties?.id) {
           mark[i].center = path.center;
         }
@@ -56,7 +53,7 @@ export class GeoData implements Object {
       this.geoDatas.push(path);
     });
     //
-    for (let i=0;i<Mark.length;++i) {
+    for (let i=0;i<mark.length;++i) {
       this.geoDatas.push(mark[i]);
     }
   }

@@ -6,9 +6,13 @@ import { Mark } from "@/lib/core/Mark";
 
 export default function Home() {
 
+  function click() {
+    console.log('click');
+  }
+
   let marks:(Mark)[] = []
-  marks.push(new Mark('11110520', '경복궁'));
-  marks.push(new Mark('11170520', '전쟁기념박물관'));
+  marks.push(new Mark('11110520', '경복궁', click));
+  marks.push(new Mark('11170520', '전쟁기념박물관', click));
 
   return (
     <main>

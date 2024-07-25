@@ -15,7 +15,6 @@ let gd:GeoData;
 let isPanning = false;
 let startPoint = {x:0,y:0};
 let endPoint = {x:0,y:0};
-let scale = 1;
 const svgSize = {w:600,h:400};
 
 function ReactMapRender(props: PropsType) {
@@ -34,24 +33,13 @@ function ReactMapRender(props: PropsType) {
     var w = svgSize.w;
     var h = svgSize.h;
     var mx = e.screenX;//mouse x  
-    var my = e.screenY;    
+    var my = e.screenY;
     var dw = w*Math.sign(e.deltaY)*0.00005;
     var dh = h*Math.sign(e.deltaY)*0.00005;
     var dx = dw*mx/svgSize.w * 500;
     var dy = dh*my/svgSize.h * 500;
-    // const _viewBox = {x:viewBox.x+dx,y:viewBox.y+dy,w:viewBox.w-dw,h:viewBox.h-dh};
-    /*
-    setViewBox((prevState) => {
-    	return { ..._viewBox }
-    });
-    */
-    // console.log('transform : ' + transform);
-    // console.log('mx : ' + mx);
-    // console.log('my : ' + my);
-    // console.log('dx : ' + dx);
-    // console.log('dy : ' + dy);
-    gd.setScale(gd.scale + dw);
-    gd.translate(-dx, -dy);
+    gd.setScale(gd.scale - dw);
+    gd.translate(dx, dy);
     setTransform(gd.transform);
   }
 
@@ -70,8 +58,8 @@ function ReactMapRender(props: PropsType) {
     */
     if (isPanning) { 
       endPoint = {x:e.screenX,y:e.screenY};
-      var dx = (startPoint.x - endPoint.x)/scale;
-      var dy = (startPoint.y - endPoint.y)/scale;
+      var dx = (startPoint.x - endPoint.x)/gd.scale;
+      var dy = (startPoint.y - endPoint.y)/gd.scale;
       gd.translate(-dx, -dy);
       setTransform(gd.transform);
       isPanning = false;
@@ -81,8 +69,8 @@ function ReactMapRender(props: PropsType) {
   const moveListener = (e: React.MouseEvent<SVGSVGElement>) => {
     if (isPanning){
       endPoint = {x:e.screenX,y:e.screenY};
-      var dx = (startPoint.x - endPoint.x)/scale;
-      var dy = (startPoint.y - endPoint.y)/scale;
+      var dx = (startPoint.x - endPoint.x)/gd.scale;
+      var dy = (startPoint.y - endPoint.y)/gd.scale;
       gd.translate(-dx, -dy);
       setTransform(gd.transform);
     }
@@ -90,7 +78,7 @@ function ReactMapRender(props: PropsType) {
 
   if (!gd)
     return <div></div>
-   
+
   const regions:any = gd.geoData.map((data, index) => {
     
     if (data instanceof Mark) {
@@ -103,6 +91,7 @@ function ReactMapRender(props: PropsType) {
           fill="yellow"
           r={5}
           ref={triggerRef}
+          onClick={data.onClick}
         />
       );
       const tooltip = (

@@ -8,10 +8,12 @@ export class Mark {
   private _center: Position = [0,0];
   private _name: string = '';
   private _regionKey = ''
+  private _onClick: (event: React.MouseEvent<SVGCircleElement>) => void;
 
-  constructor(regionKey:string, name: string) {
+  constructor(regionKey:string, name: string, _onClick: (event: React.MouseEvent<SVGCircleElement>) => void) {
     this._regionKey = regionKey;
     this._name = name;
+    this._onClick = _onClick;
   }
 
   public get regionKey() {
@@ -38,4 +40,7 @@ export class Mark {
     this._name = name;
   }
 
+  public get onClick() {
+    return this._onClick;
+  }
 }
