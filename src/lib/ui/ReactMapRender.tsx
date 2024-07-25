@@ -18,7 +18,7 @@ let endPoint = {x:0,y:0};
 let scale = 1;
 const svgSize = {w:600,h:400};
 
-function ManyPoint(props: PropsType) {
+function ReactMapRender(props: PropsType) {
   const containerRef = React.createRef<SVGSVGElement>();
   const [transform, setTransform] = React.useState('');
   //
@@ -156,4 +156,4 @@ function ManyPoint(props: PropsType) {
   );
 }
 
-export default ManyPoint;
+export default ReactMapRender;

@@ -4,8 +4,8 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "manypoint",
-  description: "manypoint",
+  title: "ReactMapRender",
+  description: "ReactMapRender",
 };
 
 export default function RootLayout({
