@@ -2,6 +2,7 @@ import { GeoData } from "@/lib/core/GeoData";
 import * as React from 'react';
 import { PathTooltip } from "@/lib/ui/tooltip";
 import { Mark } from "../core/Mark";
+import { Map } from "../core/Map";
 
 interface PropsType {
   width: number;
@@ -12,10 +13,10 @@ interface PropsType {
 }
 
 let gd:GeoData;
+let map:Map;
 let isPanning = false;
 let startPoint = {x:0,y:0};
 let endPoint = {x:0,y:0};
-const svgSize = {w:600,h:400};
 
 function ReactMapRender(props: PropsType) {
   const containerRef = React.createRef<SVGSVGElement>();
@@ -23,21 +24,25 @@ function ReactMapRender(props: PropsType) {
   //
 
   React.useEffect(() => {
+    map = new Map(props.width, props.height);
+    //
     gd = new GeoData(props.geoData, props.propertyKey, props.marks);
     gd.setPosition(0, 0).setScale(1);
     gd.colors = ['#ced4da'];
     setTransform(gd.transform);
+    //
+    map.addObject(gd);
   }, []);
   
   const onWheelEvent = (e: React.WheelEvent<SVGSVGElement>) => {
-    var w = svgSize.w;
-    var h = svgSize.h;
+    const w = map.width;
+    const h = map.height;
     var mx = e.screenX;//mouse x  
     var my = e.screenY;
     var dw = w*Math.sign(e.deltaY)*0.00005;
     var dh = h*Math.sign(e.deltaY)*0.00005;
-    var dx = dw*mx/svgSize.w * 500;
-    var dy = dh*my/svgSize.h * 500;
+    var dx = dw*mx/w * 500;
+    var dy = dh*my/h * 500;
     gd.setScale(gd.scale - dw);
     gd.translate(dx, dy);
     setTransform(gd.transform);
