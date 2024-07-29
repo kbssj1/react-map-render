@@ -2,7 +2,7 @@ import type GeoJSON from "geojson";
 import { Region } from "./Region";
 import { Object } from "./Object";
 import { Scheduler } from "./Scheduler";
-import { MinMaxTest } from "./minMaxTest";
+import { BBoxMinMax } from "./BBoxMinMax";
 import { Mark } from "./Mark";
 
 /**
@@ -24,7 +24,7 @@ export class GeoData implements Object {
     this._propertyKey = propertyKey;
     this._nameKey = nameKey;
     //
-    let m =new MinMaxTest();
+    let m = new BBoxMinMax();
     geoData.features.map((feature : any) => {
       const geoFeature: any = {
         geometry: {

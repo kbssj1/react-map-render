@@ -1,4 +1,5 @@
 import { BBox, Position } from "geojson";
+import { BBoxMinMax } from "./BBoxMinMax";
 
 /** 
  *  https://github.com/d3/d3-geo/blob/main/src/path/string.js
@@ -9,10 +10,13 @@ export class Region {
   private _name: string = '';
   private _path: string = '';
   private _center: Position = [0,0];
+  private _a:Position[] = [];
   private _minMax: BBox = [0, 0, 0, 0];
+  private _m:BBoxMinMax = new BBoxMinMax();
 
   constructor(geometry: any, minMax:any) {
 
+    //
     let coordinates = geometry.coordinates;
     this._minMax = minMax;
     for (let i=0;i<coordinates.length;++i) {
@@ -27,6 +31,9 @@ export class Region {
         this._path += "Z";
       }
     }
+    this._m.pushArray(this._a);
+    this._m.calaulte();
+    this._center = [(this._m.minMax[0] + this._m.minMax[2]) / 2, (this._m.minMax[1] + this._m.minMax[3]) / 2];
   }
 
   private addPath(x: number, y: number) {
@@ -39,8 +46,7 @@ export class Region {
     y = (y - this._minMax[1]) / (this._minMax[3]-this._minMax[1]);
     x = interpolator(0, 600, x);
     y = interpolator(0, 400, y);
-
-    this._center = [x, y];
+    this._a.push([x, y]);
     switch (this.d) {
       case 0: {
         this._path += `M${x},${y}`;

@@ -15,7 +15,7 @@ export default function Home() {
   marks.push(new Mark('11170520', '전쟁기념박물관', click));
 
   return (
-    <main>
+    <main style={{width:'600px', textAlign: 'center'}}>
       <h2> Seoul Tourist destination </h2>
       <ReactMapRender 
         width={600}

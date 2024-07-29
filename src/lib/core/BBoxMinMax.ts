@@ -1,8 +1,8 @@
 import { BBox, Position } from "geojson";
 
-export class MinMaxTest {
+export class BBoxMinMax {
   private _minMax: BBox = [1000, 1000, -1000, -1000];
-  private a:any = [];
+  private a:Position[] = [];
 
   constructor() {
 
@@ -17,18 +17,22 @@ export class MinMaxTest {
         for (let i3=0;i3<xy.length;++i3) {
           const x = xy[i3][0];
           const y = -xy[i3][1];
-          this.a.push({x:x, y:y});
+          this.a.push([x, y]);
         }
       }
     }
   }
 
+  public pushArray(a:Position[]) {
+    this.a = a;
+  }
+
   public calaulte() {
     for (let i=0;i<this.a.length;++i) {
-      this._minMax[0] = Math.min(this._minMax[0], this.a[i].x);
-      this._minMax[1] = Math.min(this._minMax[1], this.a[i].y);
-      this._minMax[2] = Math.max(this._minMax[2], this.a[i].x);
-      this._minMax[3] = Math.max(this._minMax[3], this.a[i].y);
+      this._minMax[0] = Math.min(this._minMax[0], this.a[i][0]);
+      this._minMax[1] = Math.min(this._minMax[1], this.a[i][1]);
+      this._minMax[2] = Math.max(this._minMax[2], this.a[i][0]);
+      this._minMax[3] = Math.max(this._minMax[3], this.a[i][1]);
     }
   }
 
