@@ -9,6 +9,7 @@ interface PropsType {
   height: number;
   geoData: any;
   propertyKey: string;
+  nameKey: string;
   marks: Mark[];
 }
 
@@ -26,7 +27,7 @@ function ReactMapRender(props: PropsType) {
   React.useEffect(() => {
     map = new Map(props.width, props.height);
     //
-    gd = new GeoData(props.geoData, props.propertyKey, props.marks);
+    gd = new GeoData(props.geoData, props.propertyKey, props.nameKey, props.marks);
     gd.setPosition(0, 0).setScale(1);
     gd.colors = ['#ced4da'];
     setTransform(gd.transform);

@@ -14,13 +14,15 @@ export class GeoData implements Object {
   private s:Scheduler = new Scheduler();
   private _colors:string[] = [];
   private _propertyKey:string;
+  private _nameKey:string;
   public positionX: number = 0;
   public positionY: number = 0;
   public scale: number = 0;
   public transform: string = '';
 
-  constructor(geoData: any, propertyKey: string, mark: Mark[]) {
-    this._propertyKey = propertyKey; 
+  constructor(geoData: any, propertyKey: string, nameKey:string, mark: Mark[]) {
+    this._propertyKey = propertyKey;
+    this._nameKey = nameKey;
     //
     let m =new MinMaxTest();
     geoData.features.map((feature : any) => {
@@ -37,7 +39,7 @@ export class GeoData implements Object {
     geoData.features.map((feature : any) => {
       const geoFeature: GeoJSON.Feature = {
         type: "Feature",
-        properties: { NAME: feature.properties.행정동명, id: feature.properties[this._propertyKey] },
+        properties: { NAME: feature.properties[this._nameKey], id: feature.properties[this._propertyKey] },
         geometry: {
           type: "MultiPolygon",
           coordinates: feature.geometry.coordinates as GeoJSON.Position[][][],
@@ -83,8 +85,12 @@ export class GeoData implements Object {
     return this.geoDatas;
   }
 
-  public get property() {
+  public get propertyKey() {
     return this._propertyKey;
+  }
+
+  public get nameKey() {
+    return this._nameKey;
   }
 
   public setPosition(positionX:number, positionY:number) {

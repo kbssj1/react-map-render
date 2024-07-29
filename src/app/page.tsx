@@ -17,7 +17,13 @@ export default function Home() {
   return (
     <main>
       <h2> Seoul Tourist destination </h2>
-      <ReactMapRender width={600} height={400} geoData={seoulGeoData} propertyKey="행정동코드" marks={marks}/>
+      <ReactMapRender 
+        width={600}
+        height={400}
+        geoData={seoulGeoData}
+        propertyKey="행정동코드"
+        nameKey="행정동명"
+        marks={marks}/>
     </main>
   );
 }
