@@ -94,10 +94,18 @@ function ReactMapRender(props: PropsType) {
           cx={String(data.center[0])}
           cy={String(data.center[1])}
           key={index}
-          fill="yellow"
+          fill={data.focus === true ? "yellow" : "blue"}
           r={5}
           ref={triggerRef}
-          onClick={data.onClick}
+          onClick={() => {
+            data.onClick();
+            gd.geoData.map((data, index) => {
+                if (data instanceof Mark) {
+                  data.focus = false;
+                }
+            });
+            data.focus = true;
+          }}
         />
       );
       const tooltip = (
