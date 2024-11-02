@@ -4,6 +4,7 @@ import * as React from 'react';
 import ReactMapRender from "@/lib/ui/ReactMapRender";
 import seoulGeoData from "../lib/geojson/seoul.geo";
 import { Mark } from "@/lib/core/Mark";
+import ReactMapWebglRender from '@/lib/ui/ReactMapWebglRender';
 
 export default function Home() {
   const [description, setDescription] = React.useState('');
@@ -23,17 +24,21 @@ export default function Home() {
   return (
     <main style={{width:'600px', textAlign: 'center'}}>
       <h2> Seoul Tourist destination </h2>
-      <ReactMapRender 
-        width={600}
-        height={400}
-        geoData={seoulGeoData}
-        propertyKey="행정동코드"
-        nameKey="행정동명"
-        marks={marks}
-      />
+        <ReactMapRender 
+          width={600}
+          height={400}
+          geoData={seoulGeoData}
+          propertyKey="행정동코드"
+          nameKey="행정동명"
+          marks={marks}
+        />
       <p> 
         {description}
       </p>
+      <ReactMapWebglRender 
+        width={600}
+        height={400}
+      />
     </main>
   );
 }

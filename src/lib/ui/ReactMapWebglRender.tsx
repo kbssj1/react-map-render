@@ -1,4 +1,5 @@
-import WebGl from "../core/webgl/webgl";
+import React, { useEffect } from 'react'
+import WebGL from "../core/webgl/webgl";
 
 interface PropsType {
   width: number;
@@ -6,6 +7,11 @@ interface PropsType {
 }
 
 function ReactMapWebglRender(props: PropsType) {
+
+  useEffect(() => {
+    let canvas = document.querySelector("canvas")!;
+    let webgl = new WebGL(canvas);
+  }, [])
 
   return (
     <canvas />

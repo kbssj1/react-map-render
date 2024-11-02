@@ -1,26 +1,26 @@
 /**
  * The main TSGL class.
  */
-class WebGl {
+class WebGL {
   private canvas: HTMLCanvasElement;
   private static ctx: WebGL2RenderingContext;
   private static frame: number;
   private lastFrameTimestamp: number;
 
   public constructor(canvas: HTMLCanvasElement) {
-    WebGl.ctx = canvas.getContext("webgl2")!;
-    WebGl.frame = 0;
+    WebGL.ctx = canvas.getContext("webgl2")!;
+    WebGL.frame = 0;
 
     this.canvas = canvas;
     this.lastFrameTimestamp = performance.now();
 
-    WebGl.ctx.enable(WebGl.ctx.CULL_FACE);
-    WebGl.ctx.cullFace(WebGl.ctx.BACK);
-    WebGl.ctx.enable(WebGl.ctx.DEPTH_TEST);
+    WebGL.ctx.enable(WebGL.ctx.CULL_FACE);
+    WebGL.ctx.cullFace(WebGL.ctx.BACK);
+    WebGL.ctx.enable(WebGL.ctx.DEPTH_TEST);
 
     // fix texture orientation
     // https://jameshfisher.com/2020/10/22/why-is-my-webgl-texture-upside-down/
-    WebGl.ctx.pixelStorei(WebGl.ctx.UNPACK_FLIP_Y_WEBGL, true);
+    WebGL.ctx.pixelStorei(WebGL.ctx.UNPACK_FLIP_Y_WEBGL, true);
 
     this.update = this.update.bind(this);
   }
@@ -42,7 +42,7 @@ class WebGl {
     let deltaTime = (elapsed - this.lastFrameTimestamp) / 1000;
     this.lastFrameTimestamp = elapsed;
     this.render();
-    WebGl.frame++;
+    WebGL.frame++;
     window.requestAnimationFrame(this.update);
   }
 
@@ -50,21 +50,21 @@ class WebGl {
    * Renders the scene.
    */
   private render() {
-    WebGl.ctx.viewport(0, 0, this.canvas.width, this.canvas.height);
-    WebGl.ctx.clear(WebGl.ctx.COLOR_BUFFER_BIT | WebGl.ctx.DEPTH_BUFFER_BIT);
+    WebGL.ctx.viewport(0, 0, this.canvas.width, this.canvas.height);
+    WebGL.ctx.clear(WebGL.ctx.COLOR_BUFFER_BIT | WebGL.ctx.DEPTH_BUFFER_BIT);
   }
 
   public static get gl(): WebGL2RenderingContext {
-    if (WebGl.ctx === null) {
+    if (WebGL.ctx === null) {
       throw new Error("Error");
     }
 
-    return WebGl.ctx;
+    return WebGL.ctx;
   }
 
   public static get currentFrame(): number {
-    return WebGl.frame;
+    return WebGL.frame;
   }
 }
 
-export default WebGl;
+export default WebGL;
