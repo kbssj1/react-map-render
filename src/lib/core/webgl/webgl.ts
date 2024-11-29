@@ -1,5 +1,5 @@
 /**
- * The main TSGL class.
+ * The main WebGL class.
  */
 class WebGL {
   private canvas: HTMLCanvasElement;
