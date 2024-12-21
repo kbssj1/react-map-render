@@ -1,6 +1,7 @@
 import Shader from "./shader";
 import WebGL from "../webgl";
-// import VERTEX_SHADER from "./vertex";
+import VERTEX_SHADER from "./vertex.glsl";
+import FRAGMENT_SHADER from "./fragment.glsl";
 
 /**
  * A WebGL shader program, consisting of a vertex shader and a fragment shader.
