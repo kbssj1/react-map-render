@@ -28,8 +28,8 @@ class WebGL {
     // https://jameshfisher.com/2020/10/22/why-is-my-webgl-texture-upside-down/
     WebGL.ctx.pixelStorei(WebGL.ctx.UNPACK_FLIP_Y_WEBGL, true);
 
-    let vertexShader = new Shader(0, VERTEX_SHADER);
-    let fragmentShader = new Shader(1, FRAGMENT_SHADER);
+    let vertexShader = new Shader(WebGL.ctx.VERTEX_SHADER, VERTEX_SHADER);
+    let fragmentShader = new Shader(WebGL.ctx.FRAGMENT_SHADER, FRAGMENT_SHADER);
     this.shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
 
     this.update = this.update.bind(this);

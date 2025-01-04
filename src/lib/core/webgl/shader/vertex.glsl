@@ -1,25 +1,13 @@
 #version 300 es
-#https://github.com/w-henderson/TSGL
 
-precision highp float;
+// an attribute is an input (in) to a vertex shader.
+// It will receive data from a buffer
+in vec4 a_position;
 
-in vec3 oc_position;
-in vec3 oc_normal;
-in vec2 texcoord;
-
-out vec3 wc_frag_normal;
-out vec2 frag_texcoord;
-out vec3 wc_frag_pos;
-
-uniform mat4 mvp_matrix;
-uniform mat4 m_matrix;
-uniform mat3 normal_matrix;
- 
+// all shaders have a main function
 void main() {
-  frag_texcoord = texcoord;
 
-  wc_frag_pos = vec3(m_matrix * vec4(oc_position, 1.0));
-  wc_frag_normal = normalize(normal_matrix * oc_normal);
-
-  gl_Position = mvp_matrix * vec4(oc_position, 1.0);
+  // gl_Position is a special variable a vertex shader
+  // is responsible for setting
+  gl_Position = a_position;
 }
