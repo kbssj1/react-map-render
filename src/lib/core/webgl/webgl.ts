@@ -16,6 +16,7 @@ class WebGL {
 
   public constructor(canvas: HTMLCanvasElement) {
     WebGL.ctx = canvas.getContext("webgl2")!;
+    /*
     WebGL.frame = 0;
 
     this.canvas = canvas;
@@ -28,7 +29,7 @@ class WebGL {
     // fix texture orientation
     // https://jameshfisher.com/2020/10/22/why-is-my-webgl-texture-upside-down/
     WebGL.ctx.pixelStorei(WebGL.ctx.UNPACK_FLIP_Y_WEBGL, true);
-
+    */
     let vertexShader = new Shader(WebGL.ctx.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(WebGL.ctx.FRAGMENT_SHADER, FRAGMENT_SHADER);
     this.shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
