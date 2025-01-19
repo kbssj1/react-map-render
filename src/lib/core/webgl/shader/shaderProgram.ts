@@ -29,9 +29,11 @@ class ShaderProgram {
   private createProgram(): WebGLProgram | null {
     let program = WebGL.gl.createProgram();
     if (program === null) return null;
-
-    WebGL.gl.attachShader(program, this.vertexShader.getHandle()!);
-    WebGL.gl.attachShader(program, this.fragmentShader.getHandle()!);
+    if (this.vertexShader.getHandle() && this.fragmentShader.getHandle())
+    {
+      WebGL.gl.attachShader(program, this.vertexShader.getHandle());
+      WebGL.gl.attachShader(program, this.fragmentShader.getHandle());
+    }
     WebGL.gl.linkProgram(program);
 
     let success = WebGL.gl.getProgramParameter(program, WebGL.gl.LINK_STATUS);
@@ -39,7 +41,6 @@ class ShaderProgram {
 
     console.error(WebGL.gl.getProgramInfoLog(program));
     WebGL.gl.deleteProgram(program);
-
     return null;
   }
 
