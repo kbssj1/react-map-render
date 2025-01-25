@@ -16,10 +16,11 @@ class WebGL {
 
   public constructor(canvas: HTMLCanvasElement) {
     WebGL.ctx = canvas.getContext("webgl2")!;
+    this.canvas = canvas;
+    
     /*
     WebGL.frame = 0;
 
-    this.canvas = canvas;
     this.lastFrameTimestamp = performance.now();
 
     WebGL.ctx.enable(WebGL.ctx.CULL_FACE);
