@@ -9,6 +9,12 @@ interface AttributeInfo {
 class Attribute {
 
   private attributeInfo: AttributeInfo;
+  private gl:WebGL2RenderingContext;
+
+  constructor(gl: WebGL2RenderingContext, arrays: AttributeInfo) {
+    this.attributeInfo = arrays;
+    this.gl = gl;
+  }
 
 }
 

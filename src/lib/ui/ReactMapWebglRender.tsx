@@ -9,7 +9,7 @@ interface PropsType {
 function ReactMapWebglRender(props: PropsType) {
 
   useEffect(() => {
-    let canvas = document.querySelector("#c");
+    let canvas:HTMLCanvasElement | null = document.querySelector("#c");
     if (canvas) {
       let webgl = new WebGL(canvas);
     }
