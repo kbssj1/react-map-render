@@ -11,9 +11,14 @@ class Attribute {
   private attributeInfo: AttributeInfo;
   private gl:WebGL2RenderingContext;
 
-  constructor(gl: WebGL2RenderingContext, arrays: AttributeInfo) {
+  constructor(gl: WebGL2RenderingContext, program:WebGLProgram, arrays: AttributeInfo) {
     this.attributeInfo = arrays;
     this.gl = gl;
+
+    var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+    var vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    gl.enableVertexAttribArray(positionAttributeLocation);
   }
 
 }

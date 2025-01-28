@@ -34,12 +34,16 @@ class WebGL {
     let vertexShader = new Shader(WebGL.ctx.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(WebGL.ctx.FRAGMENT_SHADER, FRAGMENT_SHADER);
     this.shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-
+    let program:WebGLProgram = this.shaderProgram.getHandle();
     // Test
     // look up where the vertex data needs to go.
-    if (this.shaderProgram.getHandle())
+    if (program)
     {
-      var positionAttributeLocation = WebGL.gl.getAttribLocation(this.shaderProgram.getHandle(), "a_position");
+      var positionAttributeLocation = WebGL.gl.getAttribLocation(program, "a_position");
+      var vao = WebGL.gl.createVertexArray();
+      WebGL.gl.bindVertexArray(vao);
+      WebGL.gl.enableVertexAttribArray(positionAttributeLocation);
+
       // Create a buffer and put three 2d clip space points in it
       var positionBuffer = WebGL.gl.createBuffer();
       // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
@@ -50,12 +54,6 @@ class WebGL {
         0.7, 0,
       ];
       WebGL.gl.bufferData(WebGL.gl.ARRAY_BUFFER, new Float32Array(positions), WebGL.gl.STATIC_DRAW);
-      // Create a vertex array object (attribute state)
-      var vao = WebGL.gl.createVertexArray();
-      // and make it the one we're currently working with
-      WebGL.gl.bindVertexArray(vao);
-      // Turn on the attribute
-      WebGL.gl.enableVertexAttribArray(positionAttributeLocation);
       // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
       var size = 2;          // 2 components per iteration
       var type = WebGL.gl.FLOAT;   // the data is 32bit floats
