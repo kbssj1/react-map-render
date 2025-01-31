@@ -3,6 +3,12 @@ import ShaderProgram from "./shader/shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import webglUtils from "./utils";
+import { Attribute, AttributeInfo } from "./Attribute";
+import { Buffer, BufferInfo } from "./buffer";
+
+export interface Arrays {
+  position: number[]
+}
 
 /**
  * The main WebGL class.
@@ -39,28 +45,10 @@ class WebGL {
     // look up where the vertex data needs to go.
     if (program)
     {
-      var positionAttributeLocation = WebGL.gl.getAttribLocation(program, "a_position");
-      var vao = WebGL.gl.createVertexArray();
-      WebGL.gl.bindVertexArray(vao);
-      WebGL.gl.enableVertexAttribArray(positionAttributeLocation);
+      let array:Arrays = {position : [0, 0, 0, 0.5, 0.7, 0,]};
+      let buffer:Buffer = new Buffer(WebGL.ctx, array);
+      let attribute:Attribute = new Attribute(WebGL.ctx, program, array);
 
-      // Create a buffer and put three 2d clip space points in it
-      var positionBuffer = WebGL.gl.createBuffer();
-      // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-      WebGL.gl.bindBuffer(WebGL.gl.ARRAY_BUFFER, positionBuffer);
-      var positions = [
-        0, 0,
-        0, 0.5,
-        0.7, 0,
-      ];
-      WebGL.gl.bufferData(WebGL.gl.ARRAY_BUFFER, new Float32Array(positions), WebGL.gl.STATIC_DRAW);
-      // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-      var size = 2;          // 2 components per iteration
-      var type = WebGL.gl.FLOAT;   // the data is 32bit floats
-      var normalize = false; // don't normalize the data
-      var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-      var offset = 0;        // start at the beginning of the buffer
-      WebGL.gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
       webglUtils.resizeCanvasToDisplaySize(WebGL.gl.canvas);
       // Tell WebGL how to convert from clip space to pixels
       WebGL.gl.viewport(0, 0, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
@@ -69,8 +57,6 @@ class WebGL {
       WebGL.gl.clear(WebGL.gl.COLOR_BUFFER_BIT);
       // Tell it to use our program (pair of shaders)
       WebGL.gl.useProgram(this.shaderProgram.getHandle());
-      // Bind the attribute/buffer set we want.
-      WebGL.gl.bindVertexArray(vao);
       // draw
       var primitiveType = WebGL.gl.TRIANGLES;
       var offset = 0;
