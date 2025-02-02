@@ -2,12 +2,12 @@ import Shader from "./shader/shader";
 import ShaderProgram from "./shader/shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
-import webglUtils from "./utils";
-import { Attribute, AttributeInfo } from "./Attribute";
+import { Attribute, AttributeInfo } from "./attribute";
 import { Buffer, BufferInfo } from "./buffer";
 
 export interface Arrays {
-  position: number[]
+  position: number[],
+  texcoords: number[]
 }
 
 /**
@@ -45,11 +45,13 @@ class WebGL {
     // look up where the vertex data needs to go.
     if (program)
     {
-      let array:Arrays = {position : [0, 0, 0, 0.5, 0.7, 0,]};
+      let array:Arrays = {
+        position : [0, 0, 0, 0.5, 0.7, 0,], 
+        texcoords: [0.0,  0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
       let buffer:Buffer = new Buffer(WebGL.ctx, array);
       let attribute:Attribute = new Attribute(WebGL.ctx, program, array);
 
-      webglUtils.resizeCanvasToDisplaySize(WebGL.gl.canvas);
+      this.resizeCanvasToDisplaySize(this.canvas, 1);
       // Tell WebGL how to convert from clip space to pixels
       WebGL.gl.viewport(0, 0, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
       // Clear the canvas
@@ -95,6 +97,25 @@ class WebGL {
     WebGL.ctx.viewport(0, 0, this.canvas.width, this.canvas.height);
     WebGL.ctx.clear(WebGL.ctx.COLOR_BUFFER_BIT | WebGL.ctx.DEPTH_BUFFER_BIT);
   }
+
+    /**
+   * Resize a canvas to match the size its displayed.
+   * @param {HTMLCanvasElement} canvas The canvas to resize.
+   * @param {number} [multiplier] amount to multiply by.
+   *    Pass in window.devicePixelRatio for native pixels.
+   * @return {boolean} true if the canvas was resized.
+   */
+  private resizeCanvasToDisplaySize(canvas:HTMLCanvasElement, multiplier:number) {
+      multiplier = multiplier || 1;
+      const width  = canvas.clientWidth  * multiplier | 0;
+      const height = canvas.clientHeight * multiplier | 0;
+      if (canvas.width !== width ||  canvas.height !== height) {
+        canvas.width  = width;
+        canvas.height = height;
+        return true;
+      }
+      return false;
+    }
 
   public static get gl(): WebGL2RenderingContext {
     if (WebGL.ctx === null) {
