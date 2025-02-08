@@ -3,7 +3,7 @@ import ShaderProgram from "./shader/shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { Attribute, AttributeInfo } from "./attribute";
-import { Buffer, BufferInfo } from "./buffer";
+import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
 
 export interface Arrays {
   position: number[],
@@ -19,60 +19,75 @@ class WebGL {
   private shaderProgram: ShaderProgram;
 
   public constructor(canvas: HTMLCanvasElement, image:HTMLImageElement) {
-
     this.gl = canvas.getContext("webgl2")!;
+    let gl = this.gl;
     this.canvas = canvas;
     
     let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
     this.shaderProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader);
-    let program:WebGLProgram = this.shaderProgram.getHandle();
-    // Test
-    // look up where the vertex data needs to go.
-    if (program)
+
+    if (this.shaderProgram.getHandle()) 
     {
-      var resolutionLocation = this.gl.getUniformLocation(program, "u_resolution");
-      var imageLocation = this.gl.getUniformLocation(program, "u_image");
-
       let array:Arrays = {
-        position : [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30], 
+        position : [           
+          0, 0,
+          660, 0,
+          0, 400,
+          0, 400,
+          660, 0,
+          660, 400], 
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
-      let buffer:Buffer = new Buffer(this.gl, array, image);
-      let attribute:Attribute = new Attribute(this.gl, program, array, image);
+        
+      // Create a vertex array object (attribute state)
+      var vao = gl.createVertexArray();
+      // and make it the one we're currently working with
+      gl.bindVertexArray(vao);
 
-      this.resizeCanvasToDisplaySize(canvas, 1);
+      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, this.shaderProgram.getHandle(), array, image);
+  
+      // lookup uniforms
+      var resolutionLocation = gl.getUniformLocation(this.shaderProgram.getHandle(), "u_resolution");
+      var imageLocation = gl.getUniformLocation(this.shaderProgram.getHandle(), "u_image");
+
+      this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
       // Tell WebGL how to convert from clip space to pixels
-      this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-      // Clear the canvas
-      this.gl.clearColor(0, 0, 0, 0);
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-      // Tell it to use our program (pair of shaders)
-      this.gl.useProgram(this.shaderProgram.getHandle());
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-      //
+      // Clear the canvas
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      // Tell it to use our program (pair of shaders)
+      gl.useProgram(this.shaderProgram.getHandle());
+
+      // Bind the attribute/buffer set we want.
+      gl.bindVertexArray(vao);
+
       // Pass in the canvas resolution so we can convert from
       // pixels to clipspace in the shader
-      this.gl.uniform2f(resolutionLocation, this.gl.canvas.width, this.gl.canvas.height);
-      // Tell the shader to get the texture from texture unit 0
-      this.gl.uniform1i(imageLocation, 0);
+      gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 
-      // draw
-      var primitiveType = this.gl.TRIANGLES;
+      // Tell the shader to get the texture from texture unit 0
+      gl.uniform1i(imageLocation, 0);
+
+      // Draw the rectangle.
+      var primitiveType = gl.TRIANGLES;
       var offset = 0;
       var count = 6;
-      this.gl.drawArrays(primitiveType, offset, count);
-    }
+      gl.drawArrays(primitiveType, offset, count);
+    }    
   }
 
-    /**
+      /**
    * Resize a canvas to match the size its displayed.
    * @param {HTMLCanvasElement} canvas The canvas to resize.
    * @param {number} [multiplier] amount to multiply by.
    *    Pass in window.devicePixelRatio for native pixels.
    * @return {boolean} true if the canvas was resized.
    */
-  private resizeCanvasToDisplaySize(canvas:HTMLCanvasElement, multiplier:number) {
+    private resizeCanvasToDisplaySize(canvas:any, multiplier:number) {
       multiplier = multiplier || 1;
       const width  = canvas.clientWidth  * multiplier | 0;
       const height = canvas.clientHeight * multiplier | 0;
@@ -83,6 +98,6 @@ class WebGL {
       }
       return false;
     }
-}
+}   
 
 export default WebGL;
