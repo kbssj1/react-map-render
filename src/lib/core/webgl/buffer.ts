@@ -14,14 +14,10 @@ export class Buffer {
     this.gl = gl;
     // Create a buffer and put three 2d clip space points in it
     var positionBuffer = gl.createBuffer();
-    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    var positions = arrays.position;
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-    if (positionBuffer) {
-      this.bufferInfo = {position : positionBuffer};
-    }
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrays.position), gl.STATIC_DRAW);
 
+    /*
     var texCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrays.texcoords), gl.STATIC_DRAW);
@@ -49,6 +45,7 @@ export class Buffer {
     var srcFormat = gl.RGBA;        // format of data we are supplying
     var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
     gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, image);
+    */
   }
 
   public getBufferInfo(): BufferInfo {

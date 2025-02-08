@@ -32,20 +32,29 @@ class WebGL {
     // look up where the vertex data needs to go.
     if (program)
     {
+      var resolutionUniformLocation = WebGL.gl.getUniformLocation(program, "u_resolution");
+      // var imageLocation = WebGL.gl.getUniformLocation(program, "u_image");
+  
+      this.resizeCanvasToDisplaySize(canvas, 1);
+
       let array:Arrays = {
         position : [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30], 
-        texcoords: [0.0 , 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
+        texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
       let buffer:Buffer = new Buffer(WebGL.ctx, array, image);
       let attribute:Attribute = new Attribute(WebGL.ctx, program, array);
 
-      this.resizeCanvasToDisplaySize(canvas, 1);
       // Tell WebGL how to convert from clip space to pixels
       WebGL.gl.viewport(0, 0, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
       // Clear the canvas
       WebGL.gl.clearColor(0, 0, 0, 0);
-      WebGL.gl.clear(WebGL.gl.COLOR_BUFFER_BIT);
+      WebGL.gl.clear(WebGL.gl.COLOR_BUFFER_BIT | WebGL.gl.DEPTH_BUFFER_BIT);
       // Tell it to use our program (pair of shaders)
       WebGL.gl.useProgram(this.shaderProgram.getHandle());
+
+      //
+      // WebGL.gl.uniform1i(imageLocation, 0);
+      WebGL.gl.uniform2f(resolutionUniformLocation, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
+
       // draw
       var primitiveType = WebGL.gl.TRIANGLES;
       var offset = 0;
