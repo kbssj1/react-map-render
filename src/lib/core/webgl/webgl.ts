@@ -16,27 +16,14 @@ export interface Arrays {
 class WebGL {
   private canvas: HTMLCanvasElement;
   private static ctx: WebGL2RenderingContext;
-  private static frame: number;
-  private lastFrameTimestamp: number;
   private shaderProgram: ShaderProgram;
 
-  public constructor(canvas: HTMLCanvasElement) {
+  public constructor(canvas: HTMLCanvasElement, image:HTMLImageElement) {
+
+
     WebGL.ctx = canvas.getContext("webgl2")!;
     this.canvas = canvas;
     
-    /*
-    WebGL.frame = 0;
-
-    this.lastFrameTimestamp = performance.now();
-
-    WebGL.ctx.enable(WebGL.ctx.CULL_FACE);
-    WebGL.ctx.cullFace(WebGL.ctx.BACK);
-    WebGL.ctx.enable(WebGL.ctx.DEPTH_TEST);
-
-    // fix texture orientation
-    // https://jameshfisher.com/2020/10/22/why-is-my-webgl-texture-upside-down/
-    WebGL.ctx.pixelStorei(WebGL.ctx.UNPACK_FLIP_Y_WEBGL, true);
-    */
     let vertexShader = new Shader(WebGL.ctx.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(WebGL.ctx.FRAGMENT_SHADER, FRAGMENT_SHADER);
     this.shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
@@ -46,12 +33,12 @@ class WebGL {
     if (program)
     {
       let array:Arrays = {
-        position : [0, 0, 0, 0.5, 0.7, 0,], 
-        texcoords: [0.0,  0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
-      let buffer:Buffer = new Buffer(WebGL.ctx, array);
+        position : [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30], 
+        texcoords: [0.0 , 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
+      let buffer:Buffer = new Buffer(WebGL.ctx, array, image);
       let attribute:Attribute = new Attribute(WebGL.ctx, program, array);
 
-      this.resizeCanvasToDisplaySize(this.canvas, 1);
+      this.resizeCanvasToDisplaySize(canvas, 1);
       // Tell WebGL how to convert from clip space to pixels
       WebGL.gl.viewport(0, 0, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
       // Clear the canvas
@@ -62,40 +49,9 @@ class WebGL {
       // draw
       var primitiveType = WebGL.gl.TRIANGLES;
       var offset = 0;
-      var count = 3;
+      var count = 6;
       WebGL.gl.drawArrays(primitiveType, offset, count);
     }
-
-    // this.update = this.update.bind(this);
-  }
-
-  /**
-   * Starts the main loop, initialising components then rendering frames.
-   */
-  public WebGl() {
-    this.lastFrameTimestamp = performance.now();
-    window.requestAnimationFrame(this.update);
-  }
-
-  /**
-   * One frame of the main loop, updating components and input.
-   * 
-   * @param elapsed The time elapsed since the program started.
-   */
-  private update(elapsed: number) {
-    let deltaTime = (elapsed - this.lastFrameTimestamp) / 1000;
-    this.lastFrameTimestamp = elapsed;
-    this.render();
-    WebGL.frame++;
-    window.requestAnimationFrame(this.update);
-  }
-
-  /**
-   * Renders the scene.
-   */
-  private render() {
-    WebGL.ctx.viewport(0, 0, this.canvas.width, this.canvas.height);
-    WebGL.ctx.clear(WebGL.ctx.COLOR_BUFFER_BIT | WebGL.ctx.DEPTH_BUFFER_BIT);
   }
 
     /**
@@ -123,10 +79,6 @@ class WebGL {
     }
 
     return WebGL.ctx;
-  }
-
-  public static get currentFrame(): number {
-    return WebGL.frame;
   }
 }
 
