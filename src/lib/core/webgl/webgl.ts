@@ -15,51 +15,53 @@ export interface Arrays {
  */
 class WebGL {
   private canvas: HTMLCanvasElement;
-  private static ctx: WebGL2RenderingContext;
+  private gl: WebGL2RenderingContext;
   private shaderProgram: ShaderProgram;
 
   public constructor(canvas: HTMLCanvasElement, image:HTMLImageElement) {
 
-
-    WebGL.ctx = canvas.getContext("webgl2")!;
+    this.gl = canvas.getContext("webgl2")!;
     this.canvas = canvas;
     
-    let vertexShader = new Shader(WebGL.ctx.VERTEX_SHADER, VERTEX_SHADER);
-    let fragmentShader = new Shader(WebGL.ctx.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    this.shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
+    let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
+    let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    this.shaderProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader);
     let program:WebGLProgram = this.shaderProgram.getHandle();
     // Test
     // look up where the vertex data needs to go.
     if (program)
     {
-      var resolutionUniformLocation = WebGL.gl.getUniformLocation(program, "u_resolution");
-      // var imageLocation = WebGL.gl.getUniformLocation(program, "u_image");
-  
-      this.resizeCanvasToDisplaySize(canvas, 1);
+      var resolutionLocation = this.gl.getUniformLocation(program, "u_resolution");
+      var imageLocation = this.gl.getUniformLocation(program, "u_image");
 
       let array:Arrays = {
         position : [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30], 
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
-      let buffer:Buffer = new Buffer(WebGL.ctx, array, image);
-      let attribute:Attribute = new Attribute(WebGL.ctx, program, array);
+      let buffer:Buffer = new Buffer(this.gl, array, image);
+      let attribute:Attribute = new Attribute(this.gl, program, array, image);
+
+      this.resizeCanvasToDisplaySize(canvas, 1);
 
       // Tell WebGL how to convert from clip space to pixels
-      WebGL.gl.viewport(0, 0, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
+      this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
       // Clear the canvas
-      WebGL.gl.clearColor(0, 0, 0, 0);
-      WebGL.gl.clear(WebGL.gl.COLOR_BUFFER_BIT | WebGL.gl.DEPTH_BUFFER_BIT);
+      this.gl.clearColor(0, 0, 0, 0);
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
       // Tell it to use our program (pair of shaders)
-      WebGL.gl.useProgram(this.shaderProgram.getHandle());
+      this.gl.useProgram(this.shaderProgram.getHandle());
 
       //
-      // WebGL.gl.uniform1i(imageLocation, 0);
-      WebGL.gl.uniform2f(resolutionUniformLocation, WebGL.gl.canvas.width, WebGL.gl.canvas.height);
+      // Pass in the canvas resolution so we can convert from
+      // pixels to clipspace in the shader
+      this.gl.uniform2f(resolutionLocation, this.gl.canvas.width, this.gl.canvas.height);
+      // Tell the shader to get the texture from texture unit 0
+      this.gl.uniform1i(imageLocation, 0);
 
       // draw
-      var primitiveType = WebGL.gl.TRIANGLES;
+      var primitiveType = this.gl.TRIANGLES;
       var offset = 0;
       var count = 6;
-      WebGL.gl.drawArrays(primitiveType, offset, count);
+      this.gl.drawArrays(primitiveType, offset, count);
     }
   }
 
@@ -81,14 +83,6 @@ class WebGL {
       }
       return false;
     }
-
-  public static get gl(): WebGL2RenderingContext {
-    if (WebGL.ctx === null) {
-      throw new Error("Error");
-    }
-
-    return WebGL.ctx;
-  }
 }
 
 export default WebGL;

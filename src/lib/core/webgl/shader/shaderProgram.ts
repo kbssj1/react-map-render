@@ -8,6 +8,7 @@ class ShaderProgram {
   private vertexShader: Shader;
   private fragmentShader: Shader;
   private program: WebGLProgram | null;
+  private gl: WebGL2RenderingContext;
 
   /**
    * Creates and initialises a shader program from its two constituent shaders.
@@ -15,7 +16,8 @@ class ShaderProgram {
    * @param vertexShader The vertex shader.
    * @param fragmentShader The fragment shader.
    */
-  constructor(vertexShader: Shader, fragmentShader: Shader) {
+  constructor(gl: WebGL2RenderingContext, vertexShader: Shader, fragmentShader: Shader) {
+    this.gl = gl;
     this.vertexShader = vertexShader;
     this.fragmentShader = fragmentShader;
     this.program = this.createProgram();
@@ -27,20 +29,20 @@ class ShaderProgram {
    * @returns A handle to the WebGL program, or `null` if the program could not be created.
    */
   private createProgram(): WebGLProgram | null {
-    let program = WebGL.gl.createProgram();
+    let program = this.gl.createProgram();
     if (program === null) return null;
     if (this.vertexShader.getHandle() && this.fragmentShader.getHandle())
     {
-      WebGL.gl.attachShader(program, this.vertexShader.getHandle());
-      WebGL.gl.attachShader(program, this.fragmentShader.getHandle());
+      this.gl.attachShader(program, this.vertexShader.getHandle());
+      this.gl.attachShader(program, this.fragmentShader.getHandle());
     }
-    WebGL.gl.linkProgram(program);
+    this.gl.linkProgram(program);
 
-    let success = WebGL.gl.getProgramParameter(program, WebGL.gl.LINK_STATUS);
+    let success = this.gl.getProgramParameter(program, this.gl.LINK_STATUS);
     if (success) return program;
 
-    console.error(WebGL.gl.getProgramInfoLog(program));
-    WebGL.gl.deleteProgram(program);
+    console.error(this.gl.getProgramInfoLog(program));
+    this.gl.deleteProgram(program);
     return null;
   }
 
