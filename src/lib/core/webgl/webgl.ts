@@ -2,7 +2,6 @@ import Shader from "./shader/shader";
 import ShaderProgram from "./shader/shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
-import { Attribute, AttributeInfo } from "./attribute";
 import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
 
 export interface Arrays {
@@ -16,7 +15,6 @@ export interface Arrays {
 class WebGL {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
-  private shaderProgram: ShaderProgram;
 
   public constructor(canvas: HTMLCanvasElement, image:HTMLImageElement) {
     this.gl = canvas.getContext("webgl2")!;
@@ -25,59 +23,55 @@ class WebGL {
     
     let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    this.shaderProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader);
+    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader);
+    let array:Arrays = {
+      position : [           
+        0, 0,
+        660, 0,
+        0, 400,
+        0, 400,
+        660, 0,
+        660, 400], 
+      texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
+      
+    // Create a vertex array object (attribute state)
+    var vao = gl.createVertexArray();
+    // and make it the one we're currently working with
+    gl.bindVertexArray(vao);
 
-    if (this.shaderProgram.getHandle()) 
-    {
-      let array:Arrays = {
-        position : [           
-          0, 0,
-          660, 0,
-          0, 400,
-          0, 400,
-          660, 0,
-          660, 400], 
-        texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
-        
-      // Create a vertex array object (attribute state)
-      var vao = gl.createVertexArray();
-      // and make it the one we're currently working with
-      gl.bindVertexArray(vao);
+    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array, image);
 
-      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, this.shaderProgram.getHandle(), array, image);
-  
-      // lookup uniforms
-      var resolutionLocation = gl.getUniformLocation(this.shaderProgram.getHandle(), "u_resolution");
-      var imageLocation = gl.getUniformLocation(this.shaderProgram.getHandle(), "u_image");
+    // lookup uniforms
+    var resolutionLocation = gl.getUniformLocation(webglProgram, "u_resolution");
+    var imageLocation = gl.getUniformLocation(webglProgram, "u_image");
 
-      this.resizeCanvasToDisplaySize(gl.canvas, 1);
+    this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
-      // Tell WebGL how to convert from clip space to pixels
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-      // Clear the canvas
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Clear the canvas
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      // Tell it to use our program (pair of shaders)
-      gl.useProgram(this.shaderProgram.getHandle());
+    // Tell it to use our program (pair of shaders)
+    gl.useProgram(webglProgram);
 
-      // Bind the attribute/buffer set we want.
-      gl.bindVertexArray(vao);
+    // Bind the attribute/buffer set we want.
+    gl.bindVertexArray(vao);
 
-      // Pass in the canvas resolution so we can convert from
-      // pixels to clipspace in the shader
-      gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+    // Pass in the canvas resolution so we can convert from
+    // pixels to clipspace in the shader
+    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 
-      // Tell the shader to get the texture from texture unit 0
-      gl.uniform1i(imageLocation, 0);
+    // Tell the shader to get the texture from texture unit 0
+    gl.uniform1i(imageLocation, 0);
 
-      // Draw the rectangle.
-      var primitiveType = gl.TRIANGLES;
-      var offset = 0;
-      var count = 6;
-      gl.drawArrays(primitiveType, offset, count);
-    }    
+    // Draw the rectangle.
+    var primitiveType = gl.TRIANGLES;
+    var offset = 0;
+    var count = 6;
+    gl.drawArrays(primitiveType, offset, count);
   }
 
       /**
