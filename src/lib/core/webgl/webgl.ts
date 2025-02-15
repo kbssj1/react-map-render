@@ -3,6 +3,7 @@ import ShaderProgram from "./shader/shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
+import { Mat4 } from "../math/mat4";
 
 export interface Arrays {
   position: number[],
@@ -23,7 +24,7 @@ class WebGL {
     
     let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
     let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader);
+    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
     let array:Arrays = {
       position : [           
         0, 0,
@@ -44,6 +45,7 @@ class WebGL {
     // lookup uniforms
     var resolutionLocation = gl.getUniformLocation(webglProgram, "u_resolution");
     var imageLocation = gl.getUniformLocation(webglProgram, "u_image");
+    var matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
@@ -60,16 +62,16 @@ class WebGL {
     // Bind the attribute/buffer set we want.
     gl.bindVertexArray(vao);
 
-    // Pass in the canvas resolution so we can convert from
-    // pixels to clipspace in the shader
-    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+    var matrix:Mat4 = new Mat4([2 / this.canvas.clientWidth, 0, 0, 0, 0, -2 / this.canvas.clientHeight, 0, 0,0, 0, 2 / 400, 0, -1, 1, 0, 1]);
 
-    // Tell the shader to get the texture from texture unit 0
+    // Pass in the canvas resolution so we can convert from
+    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
     gl.uniform1i(imageLocation, 0);
+    gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
 
     // Draw the rectangle.
     var primitiveType = gl.TRIANGLES;
-    var offset = 0;
+    var offset = 0; 
     var count = 6;
     gl.drawArrays(primitiveType, offset, count);
   }

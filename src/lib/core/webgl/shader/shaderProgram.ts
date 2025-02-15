@@ -1,5 +1,4 @@
 import Shader from "./shader";
-import WebGL from "../webgl";
 
 /**
  * A WebGL shader program, consisting of a vertex shader and a fragment shader.
@@ -7,7 +6,7 @@ import WebGL from "../webgl";
 class ShaderProgram {
   private vertexShader: Shader;
   private fragmentShader: Shader;
-  private program: WebGLProgram | null;
+  private program: WebGLProgram;
   private gl: WebGL2RenderingContext;
 
   /**
@@ -51,7 +50,7 @@ class ShaderProgram {
    * 
    * @returns A handle to the program.
    */
-  public getHandle(): WebGLProgram | null {
+  public getHandle(): WebGLProgram {
     return this.program;
   }
 }
