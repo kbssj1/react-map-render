@@ -1,4 +1,4 @@
-import WebGL from "../webgl";
+import WebGL from "./webgl";
 
 /**
  * An individual WebGL shader.

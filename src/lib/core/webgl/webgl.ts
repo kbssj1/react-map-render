@@ -1,9 +1,10 @@
-import Shader from "./shader/shader";
-import ShaderProgram from "./shader/shaderProgram";
+import Shader from "./shader";
+import ShaderProgram from "./shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
 import { Mat4 } from "../math/mat4";
+import { Vec3 } from "../math/vec3";
 
 export interface Arrays {
   position: number[],
@@ -28,11 +29,11 @@ class WebGL {
     let array:Arrays = {
       position : [           
         0, 0,
-        660, 0,
-        0, 400,
-        0, 400,
-        660, 0,
-        660, 400], 
+        100, 0,
+        0, 200,
+        0, 200,
+        100, 0,
+        100, 200], 
       texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
       
     // Create a vertex array object (attribute state)
@@ -63,6 +64,7 @@ class WebGL {
     gl.bindVertexArray(vao);
 
     var matrix:Mat4 = new Mat4([2 / this.canvas.clientWidth, 0, 0, 0, 0, -2 / this.canvas.clientHeight, 0, 0,0, 0, 2 / 400, 0, -1, 1, 0, 1]);
+    matrix.translate(new Vec3([50, 0, 0]));
 
     // Pass in the canvas resolution so we can convert from
     gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);

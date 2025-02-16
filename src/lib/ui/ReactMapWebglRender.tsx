@@ -10,14 +10,16 @@ function ReactMapWebglRender(props: PropsType) {
 
   useEffect(() => {
     let canvas:HTMLCanvasElement | null = document.querySelector("#c");
-    
-      let image = new Image();
-      image.src = "http://localhost:3000/test.jpg";
-      image.onload = function() {
-        if (canvas) {
-          let webgl = new WebGL(canvas, image);
-        }
-      };
+
+    let image = new Image();
+    image.src = "http://localhost:3000/test.jpg";
+    image.onload = function() {
+      if (canvas) {
+        canvas.width = props.width;
+        canvas.height = props.height;
+        let webgl = new WebGL(canvas, image);
+      }
+    };
   }, [])
 
   return (
