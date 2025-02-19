@@ -88,7 +88,71 @@ export class Mat4 {
     this.values[15] += this.values[3] * x + this.values[7] * y + this.values[11] * z
 
     return this
-}
+  }
+
+  rotate(angle: number, axis: Vec3): Mat4 {
+    let x = axis.x
+    let y = axis.y
+    let z = axis.z
+
+    let length = Math.sqrt(x * x + y * y + z * z)
+
+    if (length !== 1) {
+      length = 1 / length
+      x *= length
+      y *= length
+      z *= length
+    }
+
+    const s = Math.sin(angle)
+    const c = Math.cos(angle)
+
+    const t = 1.0 - c
+
+    const a00 = this.values[0]
+    const a01 = this.values[1]
+    const a02 = this.values[2]
+    const a03 = this.values[3]
+
+    const a10 = this.values[4]
+    const a11 = this.values[5]
+    const a12 = this.values[6]
+    const a13 = this.values[7]
+
+    const a20 = this.values[8]
+    const a21 = this.values[9]
+    const a22 = this.values[10]
+    const a23 = this.values[11]
+
+    const b00 = x * x * t + c
+    const b01 = y * x * t + z * s
+    const b02 = z * x * t - y * s
+
+    const b10 = x * y * t - z * s
+    const b11 = y * y * t + c
+    const b12 = z * y * t + x * s
+
+    const b20 = x * z * t + y * s
+    const b21 = y * z * t - x * s
+    const b22 = z * z * t + c
+
+    this.values[0] = a00 * b00 + a10 * b01 + a20 * b02
+    this.values[1] = a01 * b00 + a11 * b01 + a21 * b02
+    this.values[2] = a02 * b00 + a12 * b01 + a22 * b02
+    this.values[3] = a03 * b00 + a13 * b01 + a23 * b02
+
+    this.values[4] = a00 * b10 + a10 * b11 + a20 * b12
+    this.values[5] = a01 * b10 + a11 * b11 + a21 * b12
+    this.values[6] = a02 * b10 + a12 * b11 + a22 * b12
+    this.values[7] = a03 * b10 + a13 * b11 + a23 * b12
+
+    this.values[8] = a00 * b20 + a10 * b21 + a20 * b22
+    this.values[9] = a01 * b20 + a11 * b21 + a21 * b22
+    this.values[10] = a02 * b20 + a12 * b21 + a22 * b22
+    this.values[11] = a03 * b20 + a13 * b21 + a23 * b22
+
+    return this;
+  }
 
   array() : number[] {
     let result:number[] = new Array();

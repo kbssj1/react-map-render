@@ -5,9 +5,6 @@
 in vec4 a_position;
 in vec2 a_texCoord;
 
-// Used to pass in the resolution of the canvas
-uniform vec2 u_resolution;
-
 // Used to pass the texture coordinates to the fragment shader
 out vec2 v_texCoord;
 
