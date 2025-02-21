@@ -154,6 +154,29 @@ export class Mat4 {
     return this;
   }
 
+  scale(vector: Vec3): Mat4 {
+    const x = vector.x
+    const y = vector.y
+    const z = vector.z
+
+    this.values[0] *= x
+    this.values[1] *= x
+    this.values[2] *= x
+    this.values[3] *= x
+
+    this.values[4] *= y
+    this.values[5] *= y
+    this.values[6] *= y
+    this.values[7] *= y
+
+    this.values[8] *= z
+    this.values[9] *= z
+    this.values[10] *= z
+    this.values[11] *= z
+
+    return this
+  }
+
   array() : number[] {
     let result:number[] = new Array();
     for (let i = 0; i < 16; i++) {

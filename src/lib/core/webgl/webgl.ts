@@ -64,7 +64,8 @@ class WebGL {
 
     var matrix:Mat4 = new Mat4([2 / this.canvas.clientWidth, 0, 0, 0, 0, -2 / this.canvas.clientHeight, 0, 0, 0, 0, 2 / 400, 0, -1, 1, 0, 1]);
     matrix.translate(new Vec3([100, 50, 0]));
-    matrix.rotate(Math.PI * 0.1, new Vec3([0, 0, 1]));
+    matrix.scale(new Vec3([2, 1, 1]));
+    // matrix.rotate(Math.PI * 0.1, new Vec3([0, 0, 1]));
 
     // Pass in the canvas resolution so we can convert from
     gl.uniform1i(imageLocation, 0);
