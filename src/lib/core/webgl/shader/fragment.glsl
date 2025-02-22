@@ -6,6 +6,7 @@ precision highp float;
 
 // our texture
 uniform sampler2D u_image;
+uniform bool useTexture; // 텍스처 사용 여부를 결정하는 uniform
 
 // the texCoords passed in from the vertex shader.
 in vec2 v_texCoord;
@@ -14,5 +15,9 @@ in vec2 v_texCoord;
 out vec4 outColor;
 
 void main() {
-  outColor = texture(u_image, v_texCoord);
+  if (useTexture) {
+    outColor = texture(u_image, v_texCoord);
+  } else {
+    outColor = vec4(1.0, 0.0, 0.0, 1.0);
+  }
 }

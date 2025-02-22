@@ -22,10 +22,7 @@ class WebGL {
     this.gl = canvas.getContext("webgl2")!;
     let gl = this.gl;
     this.canvas = canvas;
-    
-    let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
-    let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
+
     let array:Arrays = {
       position : [           
         0, 0,
@@ -34,7 +31,12 @@ class WebGL {
         0, 200,
         100, 0,
         100, 200], 
-      texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]};
+      texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,]
+    };
+    
+    let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
+    let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
       
     // Create a vertex array object (attribute state)
     var vao = gl.createVertexArray();
@@ -44,8 +46,9 @@ class WebGL {
     let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array, image);
 
     // lookup uniforms
-    var imageLocation = gl.getUniformLocation(webglProgram, "u_image");
-    var matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
+    const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
+    const matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
+    const useTextureLocation = gl.getUniformLocation(webglProgram, "useTexture");
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
@@ -67,9 +70,10 @@ class WebGL {
     matrix.scale(new Vec3([2, 1, 1]));
     // matrix.rotate(Math.PI * 0.1, new Vec3([0, 0, 1]));
 
-    // Pass in the canvas resolution so we can convert from
+    // uniform
     gl.uniform1i(imageLocation, 0);
     gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
+    gl.uniform1i(useTextureLocation, 1); // 텍스처를 사용하지 않고 단색 출력
 
     // Draw the rectangle.
     var primitiveType = gl.TRIANGLES;
