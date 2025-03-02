@@ -9,7 +9,9 @@ import { Vec3 } from "../math/vec3";
 export interface Arrays {
   position: number[],
   texcoords: number[],
-  useTexture: number
+  color: number[],
+  useTexture: number,
+  useColor: number
 }
 
 /**
@@ -27,52 +29,52 @@ class WebGL {
     let array:Arrays = {
       position : [
         // left column front
-          0,   0,  0,
-         30,   0,  0,
-          0, 150,  0,
-          0, 150,  0,
-         30,   0,  0,
-         30, 150,  0,
+        0,   0,  0,
+        0, 150,  0,
+        30,   0,  0,
+        0, 150,  0,
+        30, 150,  0,
+        30,   0,  0,
 
         // top rung front
-         30,   0,  0,
+        30,   0,  0,
+        30,  30,  0,
         100,   0,  0,
-         30,  30,  0,
-         30,  30,  0,
-        100,   0,  0,
+        30,  30,  0,
         100,  30,  0,
+        100,   0,  0,
 
         // middle rung front
-         30,  60,  0,
-         67,  60,  0,
-         30,  90,  0,
-         30,  90,  0,
-         67,  60,  0,
-         67,  90,  0,
+        30,  60,  0,
+        30,  90,  0,
+        67,  60,  0,
+        30,  90,  0,
+        67,  90,  0,
+        67,  60,  0,
 
         // left column back
-          0,   0,  30,
-         30,   0,  30,
-          0, 150,  30,
-          0, 150,  30,
-         30,   0,  30,
-         30, 150,  30,
+        0,   0,  30,
+        30,   0,  30,
+        0, 150,  30,
+        0, 150,  30,
+        30,   0,  30,
+        30, 150,  30,
 
         // top rung back
-         30,   0,  30,
+        30,   0,  30,
         100,   0,  30,
-         30,  30,  30,
-         30,  30,  30,
+        30,  30,  30,
+        30,  30,  30,
         100,   0,  30,
         100,  30,  30,
 
         // middle rung back
-         30,  60,  30,
-         67,  60,  30,
-         30,  90,  30,
-         30,  90,  30,
-         67,  60,  30,
-         67,  90,  30,
+          30,  60,  30,
+          67,  60,  30,
+          30,  90,  30,
+          30,  90,  30,
+          67,  60,  30,
+          67,  90,  30,
 
         // top
           0,   0,   0,
@@ -100,27 +102,27 @@ class WebGL {
 
         // between top rung and middle
         30,   30,   0,
+        30,   60,  30,
         30,   30,  30,
-        30,   60,  30,
         30,   30,   0,
-        30,   60,  30,
         30,   60,   0,
+        30,   60,  30,
 
         // top of middle rung
         30,   60,   0,
+        67,   60,  30,
         30,   60,  30,
-        67,   60,  30,
         30,   60,   0,
-        67,   60,  30,
         67,   60,   0,
+        67,   60,  30,
 
         // right of middle rung
         67,   60,   0,
+        67,   90,  30,
         67,   60,  30,
-        67,   90,  30,
         67,   60,   0,
-        67,   90,  30,
         67,   90,   0,
+        67,   90,  30,
 
         // bottom of middle rung.
         30,   90,   0,
@@ -132,11 +134,11 @@ class WebGL {
 
         // right of bottom
         30,   90,   0,
+        30,  150,  30,
         30,   90,  30,
-        30,  150,  30,
         30,   90,   0,
-        30,  150,  30,
         30,  150,   0,
+        30,  150,  30,
 
         // bottom
         0,   150,   0,
@@ -155,7 +157,137 @@ class WebGL {
         0, 150,   0,
       ], 
       texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
-      useTexture: 0
+      color: [
+        // left column front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+        // top rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+        // middle rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+
+        // left column back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+        // top rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+        // middle rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+
+        // top
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+
+        // top rung right
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+
+        // under top rung
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+
+        // between top rung and middle
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+
+        // top of middle rung
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+
+        // right of middle rung
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+
+        // bottom of middle rung.
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+
+        // right of bottom
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+
+        // bottom
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+
+        // left side
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+      ],
+      useTexture: 0,
+      useColor: 1
     };
     
     let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
@@ -173,6 +305,7 @@ class WebGL {
     const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
     const matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
     const useTextureLocation = gl.getUniformLocation(webglProgram, "useTexture");
+    const useColorLocation = gl.getUniformLocation(webglProgram, "useColor");
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
@@ -182,6 +315,12 @@ class WebGL {
     // Clear the canvas
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // tell webgl to cull faces
+    gl.enable(gl.CULL_FACE);
+
+    // turn on depth testing
+    gl.enable(gl.DEPTH_TEST);
 
     // Tell it to use our program (pair of shaders)
     gl.useProgram(webglProgram);
@@ -198,6 +337,7 @@ class WebGL {
     gl.uniform1i(imageLocation, 0);
     gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
     gl.uniform1i(useTextureLocation, array.useTexture); // 텍스처를 사용하지 않고 단색 출력
+    gl.uniform1i(useColorLocation, array.useColor);
 
     // Draw the rectangle.
     var primitiveType = gl.TRIANGLES;

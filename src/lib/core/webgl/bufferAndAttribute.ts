@@ -80,6 +80,25 @@ export class BufferAndAttribute {
                       srcType,
                       image);
       }
+      if (arrays.useColor == 1) 
+      {
+        let colorAttributeLocation = gl.getAttribLocation(program, "a_color");
+        let colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(arrays.color), gl.STATIC_DRAW);
+      
+        // Turn on the attribute
+        gl.enableVertexAttribArray(colorAttributeLocation);
+      
+        // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
+        let size = 3;          // 3 components per iteration
+        let type = gl.UNSIGNED_BYTE;   // the data is 8bit unsigned bytes
+        let normalize = true;  // convert from 0-255 to 0.0-1.0
+        let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next color
+        let offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            colorAttributeLocation, size, type, normalize, stride, offset);
+      }
     }
   }
 
