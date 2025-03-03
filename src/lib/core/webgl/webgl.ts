@@ -326,12 +326,11 @@ class WebGL {
     gl.useProgram(webglProgram);
 
     // Bind the attribute/buffer set we want.
-    gl.bindVertexArray(vao);
-
-    var matrix:Mat4 = new Mat4([2 / this.canvas.clientWidth, 0, 0, 0, 0, -2 / this.canvas.clientHeight, 0, 0, 0, 0, 2 / 400, 0, -1, 1, 0, 1]);
-    matrix.translate(new Vec3([100, 50, 0]));
+    var matrix:Mat4 = new Mat4();
+    matrix = matrix.perspective(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
+    matrix.translate(new Vec3([-150, 100, -360]));
     matrix.scale(new Vec3([1, 1, 1]));
-    matrix.rotate(Math.PI * 0.1, new Vec3([1, 1, 1]));
+    matrix.rotate(185 * Math.PI / 180, new Vec3([1, 0, 0]));
 
     // uniform
     gl.uniform1i(imageLocation, 0);

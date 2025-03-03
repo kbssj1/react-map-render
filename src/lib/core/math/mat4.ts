@@ -177,6 +177,69 @@ export class Mat4 {
     return this
   }
 
+  frustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+    const rl = (right - left)
+    const tb = (top - bottom)
+    const fn = (far - near)
+
+    return new Mat4([
+        (near * 2) / rl,
+        0,
+        0,
+        0,
+
+        0,
+        (near * 2) / tb,
+        0,
+        0,
+
+        (right + left) / rl,
+        (top + bottom) / tb,
+        -(far + near) / fn,
+        -1,
+
+        0,
+        0,
+        -(far * near * 2) / fn,
+        0,
+    ])
+  }
+
+  perspective(fov: number, aspect: number, near: number, far: number): Mat4 {
+    const top = near * Math.tan(fov * Math.PI / 360.0)
+    const right = top * aspect
+
+    return this.frustum(-right, right, -top, top, near, far)
+  } 
+
+  orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+    const rl = (right - left)
+    const tb = (top - bottom)
+    const fn = (far - near)
+
+    return new Mat4([
+        2 / rl,
+        0,
+        0,
+        0,
+
+        0,
+        2 / tb,
+        0,
+        0,
+
+        0,
+        0,
+        -2 / fn,
+        0,
+
+        -(left + right) / rl,
+        -(top + bottom) / tb,
+        -(far + near) / fn,
+        1,
+    ])
+  }
+
   array() : number[] {
     let result:number[] = new Array();
     for (let i = 0; i < 16; i++) {
