@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import WebGL from "../core/webgl/webgl";
+import GltfLoader from "../core/webgl/gltfLoader";
 
 interface PropsType {
   width: number;
@@ -17,6 +18,9 @@ function ReactMapWebglRender(props: PropsType) {
       if (canvas) {
         canvas.width = props.width;
         canvas.height = props.height;
+
+        let gltfLoader = new GltfLoader();
+        gltfLoader.loadModel("http://localhost:3000/Duck.gltf");
         let webgl = new WebGL(canvas, image);
       }
     };
