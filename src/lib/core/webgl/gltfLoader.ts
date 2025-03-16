@@ -12,7 +12,9 @@ class GltfLoader {
     const buffers = await Promise.all(
       gltf.buffers!.map(async (b) => await this.getBuffer(url, b.uri!)
     ));
-    console.log(buffers);
+    console.log(gltf);
+    const scene = gltf.scenes![gltf.scene || 0];
+    const meshes = gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers));
   }
 
   private async getBuffer(path: string, buffer: string) {
@@ -36,6 +38,19 @@ class GltfLoader {
     const blob = new Blob([uint8Array], { type: 'application/octet-stream' }); // Crea un Blob
     return URL.createObjectURL(blob); 
   }
+
+  private async loadMesh (gltf: gltf.GlTf, mesh: gltf.Mesh, buffers: ArrayBuffer[]) {
+    let elementCount = 0;
+    if (mesh.primitives[0].indices !== undefined) {
+        const indexAccessor = gltf.accessors![mesh.primitives[0].indices!];
+    } else {
+
+    }
+
+    return {
+      elementCount,
+    };
+};
 
 }
 
