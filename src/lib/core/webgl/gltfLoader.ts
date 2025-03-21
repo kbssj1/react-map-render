@@ -1,5 +1,18 @@
 import * as gltf from './gltf';
 
+export interface Buffer {
+  data: Float32Array | Int16Array;
+  size: number;
+  type: string;
+  componentType: BufferType;
+  glBuffer: WebGLBuffer;
+}
+
+export enum BufferType {
+  Float = 5126,
+  Short = 5123,
+}
+
 class GltfLoader {
 
   constructor() {
@@ -43,6 +56,8 @@ class GltfLoader {
     let elementCount = 0;
     if (mesh.primitives[0].indices !== undefined) {
         const indexAccessor = gltf.accessors![mesh.primitives[0].indices!];
+        const indexBuffer = this.readBufferFromFile(gltf, buffers, indexAccessor);
+        elementCount = indexBuffer.data.length;
     } else {
 
     }
@@ -50,8 +65,39 @@ class GltfLoader {
     return {
       elementCount,
     };
-};
+  }
 
-}
+  private readBufferFromFile (gltf: gltf.GlTf, buffers: ArrayBuffer[], accessor: gltf.Accessor) {
+    type accessorType = {
+      [key: string]: number;
+    };
+    const accessorSizes : accessorType= {
+      'SCALAR': 1,
+      'VEC2': 2,
+      'VEC3': 3,
+      'VEC4': 4,
+      'MAT2': 4,
+      'MAT3': 9,
+      'MAT4': 16
+    };
+
+    const bufferView = gltf.bufferViews![accessor.bufferView as number];
+    const size = accessorSizes[accessor.type];
+    const componentType = accessor.componentType as BufferType;
+    const type = accessor.type;
+
+    const data = componentType == BufferType.Float
+        ? new Float32Array(buffers[bufferView.buffer], (accessor.byteOffset || 0) + (bufferView.byteOffset || 0), accessor.count * size)
+        : new Int16Array(buffers[bufferView.buffer], (accessor.byteOffset || 0) + (bufferView.byteOffset || 0), accessor.count * size);
+
+    return {
+        size,
+        data,
+        type,
+        componentType,
+    } as Buffer;
+  }
+
+};
 
 export default GltfLoader;
