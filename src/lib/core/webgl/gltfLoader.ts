@@ -25,9 +25,13 @@ class GltfLoader {
     const buffers = await Promise.all(
       gltf.buffers!.map(async (b) => await this.getBuffer(url, b.uri!)
     ));
-    console.log(gltf);
+   
     const scene = gltf.scenes![gltf.scene || 0];
-    const meshes = gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers));
+    // const meshes = gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers));
+    const meshes = await Promise.all(
+      gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers))
+    );
+    console.log(meshes);
   }
 
   private async getBuffer(path: string, buffer: string) {
@@ -64,8 +68,20 @@ class GltfLoader {
 
     return {
       elementCount,
+      positions: this.getBufferFromName(gltf, buffers, mesh, 'POSITION'),
     };
   }
+
+  private getBufferFromName (gltf: gltf.GlTf, buffers: ArrayBuffer[], mesh: gltf.Mesh, name: string) {
+    if (mesh.primitives[0].attributes[name] === undefined) {
+        return null;
+    }
+
+    const accessor = this.getAccessor(gltf, mesh, name);
+    const bufferData = this.readBufferFromFile(gltf, buffers, accessor);
+
+    return bufferData;
+};
 
   private readBufferFromFile (gltf: gltf.GlTf, buffers: ArrayBuffer[], accessor: gltf.Accessor) {
     type accessorType = {
@@ -97,6 +113,11 @@ class GltfLoader {
         componentType,
     } as Buffer;
   }
+
+  private getAccessor (gltf: gltf.GlTf, mesh: gltf.Mesh, attributeName: string) {
+    const attribute = mesh.primitives[0].attributes[attributeName];
+    return gltf.accessors![attribute];
+  };
 
 };
 
