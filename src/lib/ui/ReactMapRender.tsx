@@ -1,8 +1,8 @@
-import { GeoData } from "@/lib/core/GeoData";
+import { GeoData } from "@/lib/core/2dgeo/GeoData";
 import * as React from 'react';
 import { PathTooltip } from "@/lib/ui/tooltip";
-import { Mark } from "../core/Mark";
-import { Map } from "../core/Map";
+import { Mark } from "../core/2dgeo/Mark";
+import { Map } from "../core/2dgeo/Map";
 
 interface PropsType {
   width: number;

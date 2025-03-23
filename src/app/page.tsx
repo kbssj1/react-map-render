@@ -3,7 +3,7 @@
 import * as React from 'react';
 import ReactMapRender from "@/lib/ui/ReactMapRender";
 import seoulGeoData from "../lib/geojson/seoul.geo";
-import { Mark } from "@/lib/core/Mark";
+import { Mark } from "@/lib/core/2dgeo/Mark";
 import ReactMapWebglRender from '@/lib/ui/ReactMapWebglRender';
 
 export default function Home() {
