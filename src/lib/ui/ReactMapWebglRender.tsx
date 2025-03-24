@@ -14,14 +14,7 @@ function ReactMapWebglRender(props: PropsType) {
     let canvas:HTMLCanvasElement | null = document.querySelector("#c");
 
     let imageLoader = new ImageLoader();
-    imageLoader.load("12", (test) => {
-      console.log(test);
-    });
-
-
-    let image = new Image();
-    image.src = "http://localhost:3000/test.jpg";
-    image.onload = function() {
+    imageLoader.load("http://localhost:3000/test.jpg", (image) => {
       if (canvas) {
         canvas.width = props.width;
         canvas.height = props.height;
@@ -30,7 +23,7 @@ function ReactMapWebglRender(props: PropsType) {
         gltfLoader.loadModel("http://localhost:3000/Duck.gltf");
         let webgl = new WebGL(canvas, image);
       }
-    };
+    });
   }, [])
 
   return (
