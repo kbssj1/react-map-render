@@ -5,8 +5,8 @@ class ImageLoader {
   }
 
   public load(url: string, successCallback : (str:HTMLImageElement) => void) {
-    let image = new Image();
-    image.src = "http://localhost:3000/test.jpg";
+    let image = new Image()
+    image.src = url
 
     image.onload = function() {
       successCallback(image);
