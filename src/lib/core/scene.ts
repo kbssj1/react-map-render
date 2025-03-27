@@ -5,7 +5,7 @@ class Scene {
     }
 
     public add() {
-        
+
     }
  
 }
