@@ -5,6 +5,7 @@ import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
 import { Mat4 } from "../math/mat4";
 import { Vec3 } from "../math/vec3";
+import Scene from "../scene";
 
 export interface Arrays {
   position: number[],
@@ -14,14 +15,11 @@ export interface Arrays {
   useColor: number
 }
 
-/**
- * The main WebGL class.
- */
-class WebGL {
+class WebGLRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
 
-  public constructor(canvas: HTMLCanvasElement, image:HTMLImageElement) {
+  public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
     let gl = this.gl;
     this.canvas = canvas;
@@ -299,7 +297,7 @@ class WebGL {
     // and make it the one we're currently working with
     gl.bindVertexArray(vao);
 
-    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array, image);
+    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
 
     // lookup uniforms
     const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
@@ -361,4 +359,4 @@ class WebGL {
     }
 }   
 
-export default WebGL;
+export default WebGLRenderer;

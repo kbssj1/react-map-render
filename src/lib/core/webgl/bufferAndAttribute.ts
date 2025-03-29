@@ -1,4 +1,4 @@
-import { Arrays } from "./webgl";
+import { Arrays } from "./webGLRenderer";
 
 export interface BufferInfo {
   position: WebGLBuffer
@@ -9,7 +9,7 @@ export class BufferAndAttribute {
   private bufferInfo: BufferInfo;
   private gl:WebGL2RenderingContext;
 
-  constructor(gl: WebGL2RenderingContext, program:WebGLProgram, arrays: Arrays, image:HTMLImageElement) {
+  constructor(gl: WebGL2RenderingContext, program:WebGLProgram, arrays: Arrays) {
     this.bufferInfo = arrays;
     this.gl = gl;
     if (program !== undefined) 
@@ -73,12 +73,14 @@ export class BufferAndAttribute {
         var internalFormat = gl.RGBA;   // format we want in the texture
         var srcFormat = gl.RGBA;        // format of data we are supplying
         var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+        /*
         gl.texImage2D(gl.TEXTURE_2D,
                       mipLevel,
                       internalFormat,
                       srcFormat,
                       srcType,
                       image);
+        */
       }
       if (arrays.useColor == 1) 
       {

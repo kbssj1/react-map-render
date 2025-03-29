@@ -1,6 +1,6 @@
 import { Vec3 } from "./math/vec3";
 
-class Object {
+abstract class Object {
 
     private position : Vec3 = new Vec3()
 

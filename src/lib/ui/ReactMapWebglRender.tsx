@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react'
-import WebGL from "../core/webgl/webgl";
+import WebGLRenderer from "../core/webgl/webGLRenderer";
 import GltfLoader from "../core/loader/gltfLoader";
 import ImageLoader from '../core/loader/imageLoader';
+import Scene from '../core/scene';
+import Mesh from '../core/mesh';
+import { Vec3 } from '../core/math/vec3';
 
 interface PropsType {
   width: number;
@@ -11,8 +14,8 @@ interface PropsType {
 function ReactMapWebglRender(props: PropsType) {
 
   useEffect(() => {
-    let canvas:HTMLCanvasElement | null = document.querySelector("#c");
-
+    
+    /*
     let imageLoader = new ImageLoader();
     imageLoader.load("http://localhost:3000/test.jpg", (image) => {
       if (canvas) {
@@ -21,9 +24,26 @@ function ReactMapWebglRender(props: PropsType) {
 
         let gltfLoader = new GltfLoader();
         gltfLoader.loadModel("http://localhost:3000/Duck.gltf");
-        let webgl = new WebGL(canvas, image);
+        
       }
     });
+    */
+
+    let positions: Vec3[] = [];
+    positions.push(new Vec3([0, 0, 0]));
+    positions.push(new Vec3([0, 150,  0]));
+    positions.push(new Vec3([30, 0,  0]));
+    
+    let scene:Scene = new Scene();
+    let mesh:Mesh = new Mesh();
+    mesh.setPosition(positions);
+
+    let canvas:HTMLCanvasElement | null = document.querySelector("#c");
+    if (canvas) {
+      canvas.width = props.width;
+      canvas.height = props.height;
+      let webgl = new WebGLRenderer(canvas, scene); 
+    }
   }, [])
 
   return (
