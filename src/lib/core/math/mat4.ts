@@ -205,11 +205,16 @@ export class Mat4 {
     ])
   }
 
-  perspective(fov: number, aspect: number, near: number, far: number): Mat4 {
-    const top = near * Math.tan(fov * Math.PI / 360.0)
-    const right = top * aspect
-
-    return this.frustum(-right, right, -top, top, near, far)
+  perspective(fieldOfViewInRadians:number, aspect:number, near:number, far:number): Mat4 {
+    var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+    var rangeInv = 1.0 / (near - far);
+ 
+    return new Mat4([
+      f / aspect, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (near + far) * rangeInv, -1,
+      0, 0, near * far * rangeInv * 2, 0
+    ]);
   } 
 
   orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {

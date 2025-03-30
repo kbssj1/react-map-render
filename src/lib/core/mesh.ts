@@ -16,6 +16,10 @@ class Mesh extends Object {
     public setPosition(positions: Vec3[]) {
       this.positions = positions;
     }
+
+    public getPositions() {
+      return this.positions;
+    }
 }
   
 export default Mesh;

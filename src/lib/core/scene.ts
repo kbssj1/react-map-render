@@ -11,6 +11,10 @@ class Scene {
     public add(obj : Object) {
         this.objects.push(obj);
     }
+
+    public getObject(i: number) {
+        return this.objects[i];
+    }
  
 }
   
