@@ -26,7 +26,6 @@ class WebGLRenderer {
     this.canvas = canvas;
 
     let testPositions = (scene.getObject(0) as Mesh).getPositions();
-
     let array:Arrays = {
       position : [testPositions[0].x, testPositions[0].y, testPositions[0].z, testPositions[1].x, testPositions[1].y, testPositions[1].z, testPositions[2].x, testPositions[2].y, testPositions[2].z], 
       texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
@@ -34,10 +33,7 @@ class WebGLRenderer {
       useTexture: 0,
       useColor: 0
     };
-    
-    let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
-    let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
+    let webglProgram:WebGLProgram = this.createProgram();
       
     var vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
@@ -52,16 +48,11 @@ class WebGLRenderer {
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
-    // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    // Clear the canvas
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    // tell webgl to cull faces
     gl.enable(gl.CULL_FACE);
-    // turn on depth testing
     gl.enable(gl.DEPTH_TEST);
-    // Tell it to use our program (pair of shaders)
     gl.useProgram(webglProgram);
     //
     var matrix:Mat4 = new Mat4([1, 0, 0, 0, 
@@ -93,17 +84,25 @@ class WebGLRenderer {
    *    Pass in window.devicePixelRatio for native pixels.
    * @return {boolean} true if the canvas was resized.
    */
-    private resizeCanvasToDisplaySize(canvas:any, multiplier:number) {
-      multiplier = multiplier || 1;
-      const width  = canvas.clientWidth  * multiplier | 0;
-      const height = canvas.clientHeight * multiplier | 0;
-      if (canvas.width !== width ||  canvas.height !== height) {
-        canvas.width  = width;
-        canvas.height = height;
-        return true;
-      }
-      return false;
+  private resizeCanvasToDisplaySize(canvas:any, multiplier:number) {
+    multiplier = multiplier || 1;
+    const width  = canvas.clientWidth  * multiplier | 0;
+    const height = canvas.clientHeight * multiplier | 0;
+    if (canvas.width !== width ||  canvas.height !== height) {
+      canvas.width  = width;
+      canvas.height = height;
+      return true;
     }
+    return false;
+  }
+
+  private createProgram() : WebGLProgram{
+    let vertexShader = new Shader(this.gl, this.gl.VERTEX_SHADER, VERTEX_SHADER);
+    let fragmentShader = new Shader(this.gl, this.gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
+
+    return webglProgram;
+  }
 }   
 
 export default WebGLRenderer;
