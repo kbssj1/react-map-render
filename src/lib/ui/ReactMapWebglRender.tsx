@@ -31,13 +31,23 @@ function ReactMapWebglRender(props: PropsType) {
 
     let positions: Vec3[] = [];
     positions.push(new Vec3([0, 0, 0]));
-    positions.push(new Vec3([30, 0,  0]));
-    positions.push(new Vec3([0, 150,  0]));
+    positions.push(new Vec3([-30, 0,  0]));
+    positions.push(new Vec3([0, -150,  0]));
+
+    let positions2: Vec3[] = [];
+    positions2.push(new Vec3([0, 0, 0]));
+    positions2.push(new Vec3([30, 0,  0]));
+    positions2.push(new Vec3([0, 150,  0]));
     
     let scene:Scene = new Scene();
     let mesh:Mesh = new Mesh();
     mesh.setPosition(positions);
+    let mesh2:Mesh = new Mesh();
+    mesh2.setPosition(positions2);
+
     scene.add(mesh);
+    scene.add(mesh2);
+
     let canvas:HTMLCanvasElement | null = document.querySelector("#c");
     if (canvas) {
       canvas.width = props.width;

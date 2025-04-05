@@ -16,6 +16,18 @@ export interface Arrays {
   useColor: number
 }
 
+class ToDrawObject {
+  public array:Arrays;
+  public matrix:Mat4;
+  public program:WebGLProgram
+
+  constructor(array: Arrays, program: WebGLProgram) {
+    this.array = array;
+    this.program = program;
+    this.matrix = new Mat4();
+  }
+}
+
 class WebGLRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
