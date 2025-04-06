@@ -37,9 +37,9 @@ class WebGLRenderer {
     let gl = this.gl;
     this.canvas = canvas;
 
-    let testPositions = (scene.getObject(0) as Mesh).getPositions();
+    let mesh = (scene.getObject(0) as Mesh);
     let array:Arrays = {
-      position : [testPositions[0].x, testPositions[0].y, testPositions[0].z, testPositions[1].x, testPositions[1].y, testPositions[1].z, testPositions[2].x, testPositions[2].y, testPositions[2].z], 
+      position : mesh.arrayPositions, 
       texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
       color: [],
       useTexture: 0,

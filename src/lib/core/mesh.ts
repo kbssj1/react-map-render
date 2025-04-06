@@ -20,6 +20,16 @@ class Mesh extends Object {
     public getPositions() {
       return this.positions;
     }
+
+    get arrayPositions() : number[] {
+      let array = [];
+      for (let i=0;i<this.positions.length;++i) {
+        array.push(this.positions[i].x);
+        array.push(this.positions[i].y);
+        array.push(this.positions[i].z);
+      }
+      return array;
+    }
 }
   
 export default Mesh;
