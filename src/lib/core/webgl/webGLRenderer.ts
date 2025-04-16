@@ -20,10 +20,12 @@ class ToDrawObject {
   public array:Arrays;
   public matrix:Mat4;
   public program:WebGLProgram
+  public vertexArray:WebGLVertexArrayObject
 
-  constructor(array: Arrays, program: WebGLProgram) {
+  constructor(array: Arrays, program: WebGLProgram, vertexArray:WebGLVertexArrayObject) {
     this.array = array;
     this.program = program;
+    this.vertexArray = vertexArray;
     this.matrix = new Mat4();
   }
 }
@@ -46,17 +48,6 @@ class WebGLRenderer {
       useColor: 0
     };
     let webglProgram:WebGLProgram = this.createProgram();
-      
-    var vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-
-    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
-
-    // lookup uniforms
-    const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
-    const matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
-    const useTextureLocation = gl.getUniformLocation(webglProgram, "useTexture");
-    const useColorLocation = gl.getUniformLocation(webglProgram, "useColor");
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
@@ -66,6 +57,18 @@ class WebGLRenderer {
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
     gl.useProgram(webglProgram);
+      
+    // 
+
+    var vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+
+    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
+    // lookup uniforms
+    const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
+    const matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
+    const useTextureLocation = gl.getUniformLocation(webglProgram, "useTexture");
+    const useColorLocation = gl.getUniformLocation(webglProgram, "useColor");
     //
     var matrix:Mat4 = new Mat4([1, 0, 0, 0, 
                                 0, 1, 0, 0,
@@ -87,6 +90,8 @@ class WebGLRenderer {
     var offset = 0; 
     var count = array.position.length / 3;
     gl.drawArrays(primitiveType, offset, count);
+
+    //
   }
 
   /**
