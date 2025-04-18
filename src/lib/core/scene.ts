@@ -15,6 +15,10 @@ class Scene {
     public getObject(i: number) {
         return this.objects[i];
     }
+
+    public getObjectLength() {
+        return this.objects.length;
+    }
  
 }
   

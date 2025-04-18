@@ -39,57 +39,31 @@ class WebGLRenderer {
     let gl = this.gl;
     this.canvas = canvas;
 
-    let mesh = (scene.getObject(0) as Mesh);
-    let array:Arrays = {
-      position : mesh.arrayPositions, 
-      texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
-      color: [],
-      useTexture: 0,
-      useColor: 0
-    };
-    let webglProgram:WebGLProgram = this.createProgram();
-
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
+    let toDrawObjects = [];
+    for (let i=0;i<scene.getObjectLength();++i) {
+      let mesh = (scene.getObject(i) as Mesh);
+      let array:Arrays = {
+        position : mesh.arrayPositions, 
+        texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
+        color: [],
+        useTexture: 0,
+        useColor: 0
+      };
+      let webglProgram:WebGLProgram = this.createProgram();
+      let vao = gl.createVertexArray();  
+      if (vao) {
+        toDrawObjects.push(new ToDrawObject(array, webglProgram, vao));
+      }
+    }
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
-    gl.useProgram(webglProgram);
-      
-    // 
 
-    var vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-
-    let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
-    // lookup uniforms
-    const imageLocation = gl.getUniformLocation(webglProgram, "u_image");
-    const matrixLocation = gl.getUniformLocation(webglProgram, "u_matrix");
-    const useTextureLocation = gl.getUniformLocation(webglProgram, "useTexture");
-    const useColorLocation = gl.getUniformLocation(webglProgram, "useColor");
-    //
-    var matrix:Mat4 = new Mat4([1, 0, 0, 0, 
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                0 ,0, 0, 1]);
-    matrix = matrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-    matrix.translate(new Vec3([0, 0, -360]));
-    matrix.scale(new Vec3([1, 1, 1]));
-    // matrix.rotate(185 * Math.PI / 180, new Vec3([1, 0, 0]));
-
-    // uniform
-    gl.uniform1i(imageLocation, 0);
-    gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
-    gl.uniform1i(useTextureLocation, array.useTexture); // 텍스처를 사용하지 않고 단색 출력
-    gl.uniform1i(useColorLocation, array.useColor);
-
-    // Draw the rectangle.
-    var primitiveType = gl.TRIANGLES;
-    var offset = 0; 
-    var count = array.position.length / 3;
-    gl.drawArrays(primitiveType, offset, count);
+    this.draw(toDrawObjects);
 
     //
   }
@@ -119,6 +93,43 @@ class WebGLRenderer {
     let webglProgram:WebGLProgram = new ShaderProgram(this.gl, vertexShader, fragmentShader).getHandle();
 
     return webglProgram;
+  }
+
+  private draw(objs:ToDrawObject[]) {
+    let gl = this.gl;
+    for (let i=0;i<objs.length;++i) {
+      gl.useProgram(objs[i].program);
+      gl.bindVertexArray(objs[i].vertexArray);
+      // 
+  
+      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, objs[i].program, objs[i].array);
+      // lookup uniforms
+      const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
+      const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
+      const useTextureLocation = gl.getUniformLocation(objs[i].program, "useTexture");
+      const useColorLocation = gl.getUniformLocation(objs[i].program, "useColor");
+      //
+      var matrix:Mat4 = new Mat4([1, 0, 0, 0, 
+                                  0, 1, 0, 0,
+                                  0, 0, 1, 0,
+                                  0 ,0, 0, 1]);
+      matrix = matrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
+      matrix.translate(new Vec3([0, 0, -360]));
+      matrix.scale(new Vec3([1, 1, 1]));
+      // matrix.rotate(185 * Math.PI / 180, new Vec3([1, 0, 0]));
+  
+      // uniform
+      gl.uniform1i(imageLocation, 0);
+      gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
+      gl.uniform1i(useTextureLocation, objs[i].array.useTexture); // 텍스처를 사용하지 않고 단색 출력
+      gl.uniform1i(useColorLocation, objs[i].array.useColor);
+  
+      // Draw the rectangle.
+      var primitiveType = gl.TRIANGLES;
+      var offset = 0; 
+      var count = objs[i].array.position.length / 3;
+      gl.drawArrays(primitiveType, offset, count);
+    }
   }
 }   
 
