@@ -31,8 +31,7 @@ export class BufferAndAttribute {
       var normalize = false; // don't normalize the data
       var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
       var offset = 0;        // start at the beginning of the buffer
-      gl.vertexAttribPointer(
-          positionAttributeLocation, size, type, normalize, stride, offset);
+      gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
   
       var texCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
@@ -98,8 +97,7 @@ export class BufferAndAttribute {
         let normalize = true;  // convert from 0-255 to 0.0-1.0
         let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next color
         let offset = 0;        // start at the beginning of the buffer
-        gl.vertexAttribPointer(
-            colorAttributeLocation, size, type, normalize, stride, offset);
+        gl.vertexAttribPointer(colorAttributeLocation, size, type, normalize, stride, offset);
       }
     }
   }

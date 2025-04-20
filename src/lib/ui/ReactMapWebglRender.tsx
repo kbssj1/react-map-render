@@ -35,21 +35,20 @@ function ReactMapWebglRender(props: PropsType) {
     positions.push(new Vec3([0, -150,  0]));
 
     let positions2: Vec3[] = [];
-    
+    /*
     positions2.push(new Vec3([0, 0, 0]));
     positions2.push(new Vec3([30, 0,  0]));
     positions2.push(new Vec3([0, 150,  0]));
+    */
     
-    /*
     let gltfLoader = new GltfLoader();
     gltfLoader.loadModel("http://localhost:3000/Duck.gltf", (model) => {
       let data = model[0].positions.data;
-      for (let i=0;i<8;i+=3) {
+      for (let i=0;i<data.length;i+=3) {
         positions2.push(new Vec3([data[i], data[i+1], data[i+2]]));
       }
-      // console.log(positions2);
     });
-    */
+    
     
     let scene:Scene = new Scene();
     let mesh:Mesh = new Mesh();

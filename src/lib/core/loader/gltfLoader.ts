@@ -59,9 +59,11 @@ class GltfLoader {
 
   private async loadMesh (gltf: gltf.GlTf, mesh: gltf.Mesh, buffers: ArrayBuffer[]) {
     let elementCount = 0;
+    let indexBuffer;
     if (mesh.primitives[0].indices !== undefined) {
         const indexAccessor = gltf.accessors![mesh.primitives[0].indices!];
-        const indexBuffer = this.readBufferFromFile(gltf, buffers, indexAccessor);
+        indexBuffer = this.readBufferFromFile(gltf, buffers, indexAccessor);
+
         elementCount = indexBuffer.data.length;
     } else {
 
@@ -69,6 +71,7 @@ class GltfLoader {
 
     return {
       elementCount,
+      indices: indexBuffer,
       positions: this.getBufferFromName(gltf, buffers, mesh, 'POSITION'),
     };
   }
