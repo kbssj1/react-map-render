@@ -35,6 +35,7 @@ function ReactMapWebglRender(props: PropsType) {
     positions.push(new Vec3([0, -150,  0]));
 
     let positions2: Vec3[] = [];
+    let indices: number[] = [];
     /*
     positions2.push(new Vec3([0, 0, 0]));
     positions2.push(new Vec3([30, 0,  0]));
@@ -42,10 +43,14 @@ function ReactMapWebglRender(props: PropsType) {
     */
     
     let gltfLoader = new GltfLoader();
-    gltfLoader.loadModel("http://localhost:3000/Duck.gltf", (model) => {
-      let data = model[0].positions.data;
-      for (let i=0;i<data.length;i+=3) {
-        positions2.push(new Vec3([data[i], data[i+1], data[i+2]]));
+    gltfLoader.loadModel("http://localhost:3000/Box.gltf", (model) => {
+      let positions = model[0].positions.data;
+      let indices = model[0].indices.data;
+      for (let i=0;i<positions.length;i+=3) {
+        positions2.push(new Vec3([positions[i], positions[i+1], positions[i+2]]));
+      }
+      for (let i=0;i<indices.length;++i) {
+        indices.push(indices[i]);
       }
     });
     
@@ -55,6 +60,7 @@ function ReactMapWebglRender(props: PropsType) {
     mesh.setPosition(positions);
     let mesh2:Mesh = new Mesh();
     mesh2.setPosition(positions2);
+    mesh2.indices = indices;
 
     scene.add(mesh);
     scene.add(mesh2);

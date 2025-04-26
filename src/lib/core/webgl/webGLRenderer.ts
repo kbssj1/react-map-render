@@ -10,6 +10,7 @@ import Scene from "../scene";
 
 export interface Arrays {
   position: number[],
+  indices: number[],
   texcoords: number[],
   color: number[],
   useTexture: number,
@@ -45,6 +46,7 @@ class WebGLRenderer {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
         position : mesh.arrayPositions, 
+        indices: mesh.indices,
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
         color: [],
         useTexture: 0,
