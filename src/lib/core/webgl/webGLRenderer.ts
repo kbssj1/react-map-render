@@ -46,7 +46,7 @@ class WebGLRenderer {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
         position : mesh.arrayPositions, 
-        indices: mesh.indices,
+        indices: mesh.getIndices(),
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
         color: [],
         useTexture: 0,
@@ -130,7 +130,12 @@ class WebGLRenderer {
       var primitiveType = gl.TRIANGLES;
       var offset = 0; 
       var count = objs[i].array.position.length / 3;
-      gl.drawArrays(primitiveType, offset, count);
+
+      if (objs[i].array.indices.length > 0) {
+        gl.drawElements(primitiveType, objs[i].array.indices.length, gl.UNSIGNED_SHORT, offset);
+      } else {
+        gl.drawArrays(primitiveType, offset, count);
+      }
     }
   }
 }   

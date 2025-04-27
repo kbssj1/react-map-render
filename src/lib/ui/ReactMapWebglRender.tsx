@@ -35,42 +35,42 @@ function ReactMapWebglRender(props: PropsType) {
     positions.push(new Vec3([0, -150,  0]));
 
     let positions2: Vec3[] = [];
-    let indices: number[] = [];
+    let indices2: number[] = [];
     /*
     positions2.push(new Vec3([0, 0, 0]));
     positions2.push(new Vec3([30, 0,  0]));
     positions2.push(new Vec3([0, 150,  0]));
     */
-    
     let gltfLoader = new GltfLoader();
     gltfLoader.loadModel("http://localhost:3000/Box.gltf", (model) => {
       let positions = model[0].positions.data;
       let indices = model[0].indices.data;
       for (let i=0;i<positions.length;i+=3) {
-        positions2.push(new Vec3([positions[i], positions[i+1], positions[i+2]]));
+        positions2.push(new Vec3([positions[i] * 10, positions[i+1] * 10, positions[i+2] * 10]));
       }
       for (let i=0;i<indices.length;++i) {
-        indices.push(indices[i]);
+        indices2.push(indices[i]);
       }
     });
-    
-    
-    let scene:Scene = new Scene();
-    let mesh:Mesh = new Mesh();
-    mesh.setPosition(positions);
-    let mesh2:Mesh = new Mesh();
-    mesh2.setPosition(positions2);
-    mesh2.indices = indices;
 
-    scene.add(mesh);
-    scene.add(mesh2);
-    
-    let canvas:HTMLCanvasElement | null = document.querySelector("#c");
-    if (canvas) {
-      canvas.width = props.width;
-      canvas.height = props.height;
-      let webgl = new WebGLRenderer(canvas, scene); 
-    }
+    setTimeout(() => {
+      let scene:Scene = new Scene();
+      let mesh:Mesh = new Mesh();
+      mesh.setPosition(positions);
+      let mesh2:Mesh = new Mesh();
+      mesh2.setPosition(positions2);
+      mesh2.setIndices(indices2);
+      scene.add(mesh);
+      scene.add(mesh2);
+
+      let canvas:HTMLCanvasElement | null = document.querySelector("#c");
+      if (canvas) {
+        canvas.width = props.width;
+        canvas.height = props.height;
+        let webgl = new WebGLRenderer(canvas, scene); 
+      }
+    }, 100);
+
   }, [])
 
   return (

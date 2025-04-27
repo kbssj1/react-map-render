@@ -22,7 +22,17 @@ export class BufferAndAttribute {
       var positionBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arrays.position), gl.STATIC_DRAW);
-  
+      if (arrays.indices.length > 0) {
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        const indices = arrays.indices;
+        gl.bufferData(
+            gl.ELEMENT_ARRAY_BUFFER,
+            new Uint16Array(indices),
+            gl.STATIC_DRAW
+        );
+      }
+      
       // Turn on the attribute
       gl.enableVertexAttribArray(positionAttributeLocation);
       // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)

@@ -4,7 +4,7 @@ import Object from "./object";
 class Mesh extends Object {
 
     private positions: Vec3[] = [];
-    private _indices: number[] = [];
+    private indices: number[] = [];
 
     constructor() {
       super(new Vec3(), "Object");
@@ -22,12 +22,14 @@ class Mesh extends Object {
       return this.positions;
     }
 
-    get indices() : number[]{
-      return this._indices;
+    public getIndices() : number[] {
+      return this.indices;
     }
 
-    set indices(indices: number[]) {
-      this._indices = indices;
+    public setIndices(indices: number[]) {
+      for (let i=0;i<indices.length;++i) {
+        this.indices.push(indices[i]);
+      }
     }
 
     get arrayPositions() : number[] {
