@@ -52,8 +52,15 @@ function ReactMapWebglRender(props: PropsType) {
         indices2.push(indices[i]);
       }
     });
+    let webgl: WebGLRenderer;
+
+    function reqeust() {
+      webgl.draw();
+      requestAnimationFrame(reqeust);
+    }
 
     setTimeout(() => {
+      
       let scene:Scene = new Scene();
       let mesh:Mesh = new Mesh();
       mesh.setPosition(positions);
@@ -67,10 +74,10 @@ function ReactMapWebglRender(props: PropsType) {
       if (canvas) {
         canvas.width = props.width;
         canvas.height = props.height;
-        let webgl = new WebGLRenderer(canvas, scene); 
+        webgl = new WebGLRenderer(canvas, scene);
+        reqeust();
       }
     }, 100);
-
   }, [])
 
   return (

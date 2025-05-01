@@ -34,6 +34,7 @@ class ToDrawObject {
 class WebGLRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
+  private toDrawObjects:ToDrawObject[];
 
   public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
@@ -41,7 +42,7 @@ class WebGLRenderer {
     this.canvas = canvas;
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
-    let toDrawObjects = [];
+    this.toDrawObjects = [];
     for (let i=0;i<scene.getObjectLength();++i) {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
@@ -55,7 +56,7 @@ class WebGLRenderer {
       let webglProgram:WebGLProgram = this.createProgram();
       let vao = gl.createVertexArray();  
       if (vao) {
-        toDrawObjects.push(new ToDrawObject(array, webglProgram, vao));
+        this.toDrawObjects.push(new ToDrawObject(array, webglProgram, vao));
       }
     }
 
@@ -64,9 +65,6 @@ class WebGLRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
-
-    this.draw(toDrawObjects);
-
     //
   }
 
@@ -97,8 +95,9 @@ class WebGLRenderer {
     return webglProgram;
   }
 
-  private draw(objs:ToDrawObject[]) {
-    let gl = this.gl;
+  public draw() {
+    const gl = this.gl;
+    const objs = this.toDrawObjects;
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
