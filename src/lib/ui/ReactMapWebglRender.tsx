@@ -54,12 +54,13 @@ function ReactMapWebglRender(props: PropsType) {
     });
     let webgl: WebGLRenderer;
 
-    function reqeust() {
-      webgl.draw();
-      requestAnimationFrame(reqeust);
-    }
-
     setTimeout(() => {
+
+      function reqeust() {
+        mesh2.rotation = new Vec3([mesh2.rotation.x+0.001, 0, 0]);
+        webgl.draw(scene);
+        requestAnimationFrame(reqeust);
+      }
       
       let scene:Scene = new Scene();
       let mesh:Mesh = new Mesh();

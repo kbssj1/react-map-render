@@ -10,6 +10,7 @@ import Scene from "../scene";
 
 export interface Arrays {
   position: number[],
+  rotation: Vec3,
   indices: number[],
   texcoords: number[],
   color: number[],
@@ -34,19 +35,19 @@ class ToDrawObject {
 class WebGLRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
-  private toDrawObjects:ToDrawObject[];
+  private toDrawObjects:ToDrawObject[] = [];
 
   public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
     let gl = this.gl;
     this.canvas = canvas;
-
-    this.resizeCanvasToDisplaySize(gl.canvas, 1);
+    //
     this.toDrawObjects = [];
     for (let i=0;i<scene.getObjectLength();++i) {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
         position : mesh.arrayPositions, 
+        rotation : mesh.rotation,
         indices: mesh.getIndices(),
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
         color: [],
@@ -54,18 +55,18 @@ class WebGLRenderer {
         useColor: 0
       };
       let webglProgram:WebGLProgram = this.createProgram();
+      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
       let vao = gl.createVertexArray();  
       if (vao) {
         this.toDrawObjects.push(new ToDrawObject(array, webglProgram, vao));
       }
     }
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.CULL_FACE);
-    gl.enable(gl.DEPTH_TEST);
-    //
+    /*
+    const objs = this.toDrawObjects;
+    for (let i=0;i<objs.length;++i) {
+    }
+    */ 
+    // 
   }
 
   /**
@@ -95,15 +96,22 @@ class WebGLRenderer {
     return webglProgram;
   }
 
-  public draw() {
+  public draw(scene:Scene) {
     const gl = this.gl;
     const objs = this.toDrawObjects;
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.CULL_FACE);
+    gl.enable(gl.DEPTH_TEST);
+
+    this.resizeCanvasToDisplaySize(gl.canvas, 1);
+
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
-      // 
-  
-      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, objs[i].program, objs[i].array);
+
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
       const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
@@ -116,9 +124,9 @@ class WebGLRenderer {
                                   0 ,0, 0, 1]);
       matrix = matrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
       matrix.translate(new Vec3([0, 0, -360]));
-      matrix.scale(new Vec3([1, 1, 1]));
-      // matrix.rotate(185 * Math.PI / 180, new Vec3([1, 0, 0]));
-  
+      matrix.scale(new Vec3([5, 5, 5]));
+      // matrix.rotate(60 * Math.PI / 180, new Vec3([objs[i].array.rotation.x, 0, 0]));
+
       // uniform
       gl.uniform1i(imageLocation, 0);
       gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
