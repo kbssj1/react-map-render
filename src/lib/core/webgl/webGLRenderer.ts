@@ -2,7 +2,7 @@ import Shader from "./shader";
 import ShaderProgram from "./shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
-import { BufferAndAttribute, BufferInfo } from "./bufferAndAttribute";
+import { BufferAndAttribute } from "./bufferAndAttribute";
 import { Mat4 } from "../math/mat4";
 import { Vec3 } from "../math/vec3";
 import Mesh from "../mesh";
@@ -18,17 +18,25 @@ export interface Arrays {
   useColor: number
 }
 
+type Nullable<T> = T | null;
+export interface BufferInfo {
+  positionBuffer: Nullable<WebGLBuffer>,
+  indexBuffer: Nullable<WebGLBuffer>
+}
+
 class ToDrawObject {
   public array:Arrays;
   public matrix:Mat4;
   public program:WebGLProgram
   public vertexArray:WebGLVertexArrayObject
+  public bufferInfo:BufferInfo
 
-  constructor(array: Arrays, program: WebGLProgram, vertexArray:WebGLVertexArrayObject) {
+  constructor(array: Arrays, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
     this.array = array;
     this.program = program;
     this.vertexArray = vertexArray;
     this.matrix = new Mat4();
+    this.bufferInfo = bufferInfo;
   }
 }
 
@@ -55,12 +63,14 @@ class WebGLRenderer {
         useColor: 0
       };
       let webglProgram:WebGLProgram = this.createProgram();
-      let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
+      // let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
       let vao = gl.createVertexArray();  
       if (vao) {
-        this.toDrawObjects.push(new ToDrawObject(array, webglProgram, vao));
+        let bufferInfo = this.createBufferInfoFromArrays(array);
+        this.toDrawObjects.push(new ToDrawObject(array, webglProgram, vao, bufferInfo));
       }
     }
+    
     /*
     const objs = this.toDrawObjects;
     for (let i=0;i<objs.length;++i) {
@@ -96,6 +106,46 @@ class WebGLRenderer {
     return webglProgram;
   }
 
+  private createBufferInfoFromArrays(array:Arrays) : BufferInfo {
+    let gl = this.gl;
+    let positionBuffer = gl.createBuffer();
+    let indexBuffer = gl.createBuffer();
+    let bufferInfo:BufferInfo = {
+      positionBuffer : positionBuffer,
+      indexBuffer : indexBuffer
+    };
+    
+    return bufferInfo;
+  }
+
+  private setBuffersAndAttributes(array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {
+    let gl = this.gl;
+    let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+    let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.position), gl.STATIC_DRAW);
+    if (array.indices.length > 0) {
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferInfo.indexBuffer);
+      const indices = array.indices;
+      gl.bufferData(
+          gl.ELEMENT_ARRAY_BUFFER,
+          new Uint16Array(indices),
+          gl.STATIC_DRAW
+      );
+    }
+
+    // Turn on the attribute
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+    var size = 3;          // 2 components per iteration
+    var type = gl.FLOAT;   // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0;        // start at the beginning of the buffer
+    gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+  }
+
   public draw(scene:Scene) {
     const gl = this.gl;
     const objs = this.toDrawObjects;
@@ -111,6 +161,7 @@ class WebGLRenderer {
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
+      this.setBuffersAndAttributes(objs[i].array, objs[i].bufferInfo, objs[i].program);
 
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
