@@ -1,3 +1,4 @@
+// https://github.com/matthiasferch/tsm
 
 export class Vec3 {
   private values = new Float32Array(3);
@@ -20,6 +21,18 @@ export class Vec3 {
       return this.values[2]
   }
 
+  set x(value: number) {
+    this.values[0] = value
+  }
+
+  set y(value: number) {
+      this.values[1] = value
+  }
+
+  set z(value: number) {
+      this.values[2] = value
+  }
+
   set xyz(values: [number, number, number]) {
     this.values[0] = values[0]
     this.values[1] = values[1]
@@ -32,6 +45,50 @@ export class Vec3 {
       this.values[1],
       this.values[2],
     ]
+  }
+
+  static readonly zero = new Vec3([0, 0, 0])
+  static readonly one = new Vec3([1, 1, 1])
+
+  static readonly up = new Vec3([0, 1, 0])
+  static readonly right = new Vec3([1, 0, 0])
+  static readonly forward = new Vec3([0, 0, 1])
+
+  static difference(vector: Vec3, vector2: Vec3, dest?: Vec3): Vec3 {
+    if (!dest) { dest = new Vec3() }
+    dest.xyz = [vector.x - vector2.x, vector.y - vector2.y, vector.z - vector2.z];
+
+    return dest
+  }
+
+  static cross(vector: Vec3, vector2: Vec3, dest?: Vec3): Vec3 {
+    if (!dest) { dest = new Vec3() }
+
+    const x = vector.x
+    const y = vector.y
+    const z = vector.z
+
+    const x2 = vector2.x
+    const y2 = vector2.y
+    const z2 = vector2.z
+
+    dest.x = y * z2 - z * y2
+    dest.y = z * x2 - x * z2
+    dest.z = x * y2 - y * x2
+
+    return dest
+  }
+
+  static dot(vector: Vec3, vector2: Vec3): number {
+    const x = vector.x
+    const y = vector.y
+    const z = vector.z
+
+    const x2 = vector2.x
+    const y2 = vector2.y
+    const z2 = vector2.z
+
+    return (x * x2 + y * y2 + z * z2)
   }
 
 }

@@ -176,7 +176,7 @@ class WebGLRenderer {
       matrix = matrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
       matrix.translate(new Vec3([0, 0, -360]));
       matrix.scale(new Vec3([5, 5, 5]));
-      // matrix.rotate(60 * Math.PI / 180, new Vec3([objs[i].array.rotation.x, 0, 0]));
+      matrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
 
       // uniform
       gl.uniform1i(imageLocation, 0);
