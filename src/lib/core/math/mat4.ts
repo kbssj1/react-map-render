@@ -12,6 +12,11 @@ export class Mat4 {
     }
   }
 
+  static readonly identity = new Mat4([1, 0, 0, 0, 
+                                  0, 1, 0, 0,
+                                  0, 0, 1, 0,
+                                  0 ,0, 0, 1])
+
   at(index: number): number {
     return this.values[index]
   }
@@ -250,4 +255,37 @@ export class Mat4 {
 
     return this
   }
+
+  static lookAt(position: Vec3, target: Vec3, up: Vec3 = Vec3.up): Mat4 {
+    if (position.equals(target)) {
+        return this.identity
+    }
+
+    const z = Vec3.difference(position, target).normalize()
+
+    const x = Vec3.cross(up, z).normalize()
+    const y = Vec3.cross(z, x).normalize()
+
+    return new Mat4([
+        x.x,
+        y.x,
+        z.x,
+        0,
+
+        x.y,
+        y.y,
+        z.y,
+        0,
+
+        x.z,
+        y.z,
+        z.z,
+        0,
+
+        -Vec3.dot(x, position),
+        -Vec3.dot(y, position),
+        -Vec3.dot(z, position),
+        1,
+    ])
+}
 }

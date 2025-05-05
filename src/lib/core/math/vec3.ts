@@ -47,6 +47,60 @@ export class Vec3 {
     ]
   }
 
+  squaredLength(): number {
+    const x = this.x
+    const y = this.y
+    const z = this.z
+
+    return (x * x + y * y + z * z)
+  }
+
+  length(): number {
+    return Math.sqrt(this.squaredLength())
+  }
+
+  normalize(dest?: Vec3): Vec3 {
+    if (!dest) { dest = this }
+
+    let length = this.length()
+
+    if (length === 1) {
+        return this
+    }
+
+    if (length === 0) {
+        dest.x = 0
+        dest.y = 0
+        dest.z = 0
+
+        return dest
+    }
+
+    length = 1.0 / length
+
+    dest.x *= length
+    dest.y *= length
+    dest.z *= length
+
+    return dest
+  }
+
+  equals(vector: Vec3, threshold = 0.00001): boolean {
+    if (Math.abs(this.x - vector.x) > threshold) {
+        return false
+    }
+
+    if (Math.abs(this.y - vector.y) > threshold) {
+        return false
+    }
+
+    if (Math.abs(this.z - vector.z) > threshold) {
+        return false
+    }
+
+    return true
+  }
+
   static readonly zero = new Vec3([0, 0, 0])
   static readonly one = new Vec3([1, 1, 1])
 

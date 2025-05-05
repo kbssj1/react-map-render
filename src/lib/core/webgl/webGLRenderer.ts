@@ -158,6 +158,9 @@ class WebGLRenderer {
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
+    var matrix:Mat4 = Mat4.identity;
+    matrix = matrix.perspective(70 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
+
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
@@ -169,13 +172,8 @@ class WebGLRenderer {
       const useTextureLocation = gl.getUniformLocation(objs[i].program, "useTexture");
       const useColorLocation = gl.getUniformLocation(objs[i].program, "useColor");
       //
-      var matrix:Mat4 = new Mat4([1, 0, 0, 0, 
-                                  0, 1, 0, 0,
-                                  0, 0, 1, 0,
-                                  0 ,0, 0, 1]);
-      matrix = matrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-      matrix.translate(new Vec3([0, 0, -360]));
-      matrix.scale(new Vec3([5, 5, 5]));
+      matrix.translate(new Vec3([0, -50, -160]));
+      matrix.scale(new Vec3([3, 3, 3]));
       matrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
 
       // uniform
