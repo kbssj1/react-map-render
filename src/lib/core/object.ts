@@ -2,26 +2,26 @@ import { Vec3 } from "./math/vec3";
 
 abstract class Object {
 
-    private _position : Vec3 = new Vec3()
+    private _localPosition : Vec3 = new Vec3()
     private _rotation : Vec3 = new Vec3()
 
     public name: string = "object";
 
     constructor(position: Vec3, name: string) {
         if (position) {
-            this.position = position;
+            this._localPosition = position;
         }
         if (name) {
             this.name = name;
         }
     }
 
-    public get position() : Vec3{
-        return this._position
+    public get localPosition() : Vec3{
+        return this._localPosition
     }
 
-    public set position(position: Vec3) {
-        this._position = position;
+    public set localPosition(position: Vec3) {
+        this._localPosition = position;
     }
 
     public get rotation() : Vec3{

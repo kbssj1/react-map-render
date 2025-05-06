@@ -65,7 +65,9 @@ function ReactMapWebglRender(props: PropsType) {
       let scene:Scene = new Scene();
       let mesh:Mesh = new Mesh();
       mesh.setPosition(positions);
+      mesh.localPosition = new Vec3([-50, -50, -620]);
       let mesh2:Mesh = new Mesh();
+      mesh2.localPosition = new Vec3([0, 0, -260]);
       mesh2.setPosition(positions2);
       mesh2.setIndices(indices2);
       scene.add(mesh);

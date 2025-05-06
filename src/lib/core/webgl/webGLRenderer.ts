@@ -10,6 +10,7 @@ import Scene from "../scene";
 
 export interface Arrays {
   position: number[],
+  localPosition: Vec3,
   rotation: Vec3,
   indices: number[],
   texcoords: number[],
@@ -54,7 +55,8 @@ class WebGLRenderer {
     for (let i=0;i<scene.getObjectLength();++i) {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
-        position : mesh.arrayPositions, 
+        position : mesh.arrayPositions,
+        localPosition : mesh.localPosition,
         rotation : mesh.rotation,
         indices: mesh.getIndices(),
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
@@ -158,9 +160,6 @@ class WebGLRenderer {
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
-    var matrix:Mat4 = Mat4.identity;
-    matrix = matrix.perspective(70 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
@@ -172,13 +171,18 @@ class WebGLRenderer {
       const useTextureLocation = gl.getUniformLocation(objs[i].program, "useTexture");
       const useColorLocation = gl.getUniformLocation(objs[i].program, "useColor");
       //
-      matrix.translate(new Vec3([0, -50, -160]));
-      matrix.scale(new Vec3([3, 3, 3]));
-      matrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
+      let projectionMatrix:Mat4 = Mat4.identity;
+      projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
+      let cameraMatrix = Mat4.lookAt(new Vec3([0, 0, 0]), objs[1].array.localPosition);
+      let viewMatrix = cameraMatrix.inverse();
+      let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
+      viewProjectionMatrix.translate(objs[i].array.localPosition);
+      viewProjectionMatrix.scale(new Vec3([3, 3, 3]));
+      viewProjectionMatrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
 
       // uniform
       gl.uniform1i(imageLocation, 0);
-      gl.uniformMatrix4fv(matrixLocation, false, matrix.array());
+      gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
       gl.uniform1i(useTextureLocation, objs[i].array.useTexture); // 텍스처를 사용하지 않고 단색 출력
       gl.uniform1i(useColorLocation, objs[i].array.useColor);
   
