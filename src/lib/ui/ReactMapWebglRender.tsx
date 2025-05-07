@@ -58,7 +58,7 @@ function ReactMapWebglRender(props: PropsType) {
 
       function reqeust() {
         mesh2.rotation = new Vec3([mesh2.rotation.x+0.001, 0, 0]);
-        webgl.draw(scene);
+        webgl.draw();
         requestAnimationFrame(reqeust);
       }
       

@@ -10,7 +10,6 @@ import Scene from "../scene";
 
 export interface Arrays {
   position: number[],
-  localPosition: Vec3,
   rotation: Vec3,
   indices: number[],
   texcoords: number[],
@@ -22,21 +21,22 @@ export interface Arrays {
 type Nullable<T> = T | null;
 export interface BufferInfo {
   positionBuffer: Nullable<WebGLBuffer>,
-  indexBuffer: Nullable<WebGLBuffer>
+  indexBuffer: Nullable<WebGLBuffer>,
+  colorBuffer: Nullable<WebGLBuffer>
 }
 
 class ToDrawObject {
-  public array:Arrays;
-  public matrix:Mat4;
+  public array:Arrays
+  public localPosition:Vec3
   public program:WebGLProgram
   public vertexArray:WebGLVertexArrayObject
   public bufferInfo:BufferInfo
 
-  constructor(array: Arrays, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
+  constructor(array: Arrays, localPosition: Vec3, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
     this.array = array;
+    this.localPosition = localPosition;
     this.program = program;
     this.vertexArray = vertexArray;
-    this.matrix = new Mat4();
     this.bufferInfo = bufferInfo;
   }
 }
@@ -56,7 +56,6 @@ class WebGLRenderer {
       let mesh = (scene.getObject(i) as Mesh);
       let array:Arrays = {
         position : mesh.arrayPositions,
-        localPosition : mesh.localPosition,
         rotation : mesh.rotation,
         indices: mesh.getIndices(),
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
@@ -69,7 +68,7 @@ class WebGLRenderer {
       let vao = gl.createVertexArray();  
       if (vao) {
         let bufferInfo = this.createBufferInfoFromArrays(array);
-        this.toDrawObjects.push(new ToDrawObject(array, webglProgram, vao, bufferInfo));
+        this.toDrawObjects.push(new ToDrawObject(array, mesh.localPosition, webglProgram, vao, bufferInfo));
       }
     }
     
@@ -112,9 +111,11 @@ class WebGLRenderer {
     let gl = this.gl;
     let positionBuffer = gl.createBuffer();
     let indexBuffer = gl.createBuffer();
+    let colorBuffer = gl.createBuffer();
     let bufferInfo:BufferInfo = {
       positionBuffer : positionBuffer,
-      indexBuffer : indexBuffer
+      indexBuffer : indexBuffer,
+      colorBuffer : colorBuffer
     };
     
     return bufferInfo;
@@ -148,7 +149,7 @@ class WebGLRenderer {
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
   }
 
-  public draw(scene:Scene) {
+  public draw() {
     const gl = this.gl;
     const objs = this.toDrawObjects;
 
@@ -173,10 +174,10 @@ class WebGLRenderer {
       //
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-      let cameraMatrix = Mat4.lookAt(new Vec3([0, 0, 0]), objs[1].array.localPosition);
+      let cameraMatrix = Mat4.lookAt(new Vec3([0, 0, 0]), objs[1].localPosition);
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
-      viewProjectionMatrix.translate(objs[i].array.localPosition);
+      viewProjectionMatrix.translate(objs[i].localPosition);
       viewProjectionMatrix.scale(new Vec3([3, 3, 3]));
       viewProjectionMatrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
 
