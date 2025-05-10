@@ -59,9 +59,9 @@ class WebGLRenderer {
         rotation : mesh.rotation,
         indices: mesh.getIndices(),
         texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
-        color: [],
+        color: [0.1, 0.5, 0.8],
         useTexture: 0,
-        useColor: 0
+        useColor: 1
       };
       let webglProgram:WebGLProgram = this.createProgram();
       // let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
@@ -140,13 +140,27 @@ class WebGLRenderer {
 
     // Turn on the attribute
     gl.enableVertexAttribArray(positionAttributeLocation);
-    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-    var size = 3;          // 2 components per iteration
-    var type = gl.FLOAT;   // the data is 32bit floats
-    var normalize = false; // don't normalize the data
-    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-    var offset = 0;        // start at the beginning of the buffer
+    var size = 3;          
+    var type = gl.FLOAT;   
+    var normalize = false; 
+    var stride = 0;       
+    var offset = 0;        
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+
+    if (array.useColor == 1) 
+    {
+      let colorAttributeLocation = gl.getAttribLocation(program, "a_color");
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.colorBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.position), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(colorAttributeLocation);
+
+      let size = 3;         
+      let type = gl.FLOAT;   
+      let normalize = true; 
+      let stride = 0;        
+      let offset = 0;      
+      gl.vertexAttribPointer(colorAttributeLocation, size, type, normalize, stride, offset);
+    }
   }
 
   public draw() {
@@ -184,7 +198,7 @@ class WebGLRenderer {
       // uniform
       gl.uniform1i(imageLocation, 0);
       gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
-      gl.uniform1i(useTextureLocation, objs[i].array.useTexture); // 텍스처를 사용하지 않고 단색 출력
+      gl.uniform1i(useTextureLocation, objs[i].array.useTexture);
       gl.uniform1i(useColorLocation, objs[i].array.useColor);
   
       // Draw the rectangle.
