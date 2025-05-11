@@ -19,7 +19,7 @@ class GltfLoader {
   
   }
 
-  public async loadModel(url:string, successCallback : (str:any) => void) {
+  public async loadModel(url:string) {
     const response = await fetch(url);
     const gltf = await response.json() as gltf.GlTf;
     const buffers = await Promise.all(
@@ -32,7 +32,7 @@ class GltfLoader {
       gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers))
     );
     
-    successCallback(meshes);
+    return meshes;
   }
 
   private async getBuffer(path: string, buffer: string) {
