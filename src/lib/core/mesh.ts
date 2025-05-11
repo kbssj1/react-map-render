@@ -1,7 +1,7 @@
 import { Vec3 } from "./math/vec3";
-import Object from "./object";
+import Base3DClass from "./base3DClass";
 
-class Mesh extends Object {
+class Mesh extends Base3DClass {
 
     private positions: Vec3[] = [];
     private indices: number[] = [];

@@ -1,36 +1,17 @@
 import { Vec3 } from "./math/vec3";
+import Base3dClass from "./base3DClass";
+import Mesh from "./mesh";
+import Material from "./Material";
 
-abstract class Object {
+class Object extends Base3dClass {
+  public mesh:Mesh;
+  public material:Material;
 
-    private _localPosition : Vec3 = new Vec3()
-    private _rotation : Vec3 = new Vec3()
-
-    public name: string = "object";
-
-    constructor(position: Vec3, name: string) {
-        if (position) {
-            this._localPosition = position;
-        }
-        if (name) {
-            this.name = name;
-        }
-    }
-
-    public get localPosition() : Vec3{
-        return this._localPosition
-    }
-
-    public set localPosition(position: Vec3) {
-        this._localPosition = position;
-    }
-
-    public get rotation() : Vec3{
-        return this._rotation
-    }
-
-    public set rotation(rotation: Vec3) {
-        this._rotation = rotation;
-    }
+  constructor(mesh:Mesh, material:Material) {
+    super(new Vec3(), "Object");
+    this.mesh = mesh;
+    this.material = material;
+  }
 }
   
 export default Object;

@@ -1,14 +1,14 @@
-import Object from "./object";
+import Base3DClass from "./base3DClass";
 
 class Scene {
 
-    private objects: Object[] = []; 
+    private objects: Base3DClass[] = []; 
 
     constructor() {
   
     }
 
-    public add(obj : Object) {
+    public add(obj : Base3DClass) {
         this.objects.push(obj);
     }
 
