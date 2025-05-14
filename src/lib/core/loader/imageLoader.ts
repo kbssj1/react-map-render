@@ -4,15 +4,16 @@ class ImageLoader {
 
   }
 
-  public load(url: string, successCallback : (str:HTMLImageElement) => void) {
-    let image = new Image()
-    image.src = url
-
-    image.onload = function() {
-      successCallback(image);
-    };
+  public load(url: string) {
+    return new Promise((resolve, reject) => {
+      let image = new Image()
+      
+      image.onload = () => resolve(image)
+      const msg = `Could not load image at ${url}`
+      image.onerror = () => reject(new Error(msg))
+      image.src = url  
+    })
   }
-
 }
 
 export default ImageLoader;

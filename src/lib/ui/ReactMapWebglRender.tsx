@@ -17,20 +17,9 @@ function ReactMapWebglRender(props: PropsType) {
 
   async function run() {
 
-    /*
     let imageLoader = new ImageLoader();
-    imageLoader.load("http://localhost:3000/test.jpg", (image) => {
-      if (canvas) {
-        canvas.width = props.width;
-        canvas.height = props.height;
-
-        let gltfLoader = new GltfLoader();
-        gltfLoader.loadModel("http://localhost:3000/Duck.gltf");
-        
-      }
-    });
-    */
-
+    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/test.jpg");
+    //
     let gltfLoader = new GltfLoader();
     let model = await gltfLoader.loadModel("http://localhost:3000/Box.gltf");
     let positions2: Vec3[] = [];
@@ -56,7 +45,7 @@ function ReactMapWebglRender(props: PropsType) {
     let mesh:Mesh = new Mesh();
     mesh.setPosition(positions2);
     mesh.setIndices(indices2);
-    let material:Material = new Material();
+    let material:Material = new Material(new Vec3([0.1, 0.8, 0.1]), image);
     let object:Object = new Object(mesh, material);
     object.localPosition = new Vec3([0, 0, -260]);
     //
