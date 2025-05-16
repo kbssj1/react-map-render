@@ -18,11 +18,5 @@ in vec4 v_color;
 out vec4 outColor;
 
 void main() {
-  if (useTexture) {
-    outColor = texture(u_image, v_texCoord);
-  } else if (useColor) {
-    outColor = v_color;
-  } else {
-    outColor = vec4(1.0, 0.0, 0.0, 1.0);
-  }
+  outColor = texture(u_image, v_texCoord) * v_color;
 }

@@ -14,15 +14,17 @@ export interface Arrays {
   indices: number[],
   texcoords: number[],
   color: Vec3,
+  image: HTMLImageElement,
   useTexture: number,
-  useColor: number
+  useColor: number,
 }
 
 type Nullable<T> = T | null;
 export interface BufferInfo {
   positionBuffer: Nullable<WebGLBuffer>,
   indexBuffer: Nullable<WebGLBuffer>,
-  colorBuffer: Nullable<WebGLBuffer>
+  colorBuffer: Nullable<WebGLBuffer>,
+  texCoordBuffer: Nullable<WebGLBuffer>
 }
 
 class ToDrawObject {
@@ -58,9 +60,10 @@ class WebGLRenderer {
         position : object.mesh.arrayPositions,
         rotation : object.mesh.rotation,
         indices: object.mesh.getIndices(),
-        texcoords: [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,1.0, 0.0, 1.0, 1.0,],
+        texcoords: object.mesh.arrayPositions,
         color: object.material.color,
-        useTexture: 0,
+        image: object.material.image,
+        useTexture: 1,
         useColor: 1
       };
       let webglProgram:WebGLProgram = this.createProgram();
@@ -112,10 +115,12 @@ class WebGLRenderer {
     let positionBuffer = gl.createBuffer();
     let indexBuffer = gl.createBuffer();
     let colorBuffer = gl.createBuffer();
+    let texCoordBuffer = gl.createBuffer();
     let bufferInfo:BufferInfo = {
       positionBuffer : positionBuffer,
       indexBuffer : indexBuffer,
-      colorBuffer : colorBuffer
+      colorBuffer : colorBuffer,
+      texCoordBuffer : texCoordBuffer
     };
     
     return bufferInfo;
@@ -146,6 +151,53 @@ class WebGLRenderer {
     var stride = 0;       
     var offset = 0;        
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+
+    if (array.useTexture == 1)
+    {
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.texcoords), gl.STATIC_DRAW);
+      // Turn on the attribute
+      gl.enableVertexAttribArray(texCoordAttributeLocation);
+      // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
+      var size = 2;          // 2 components per iteration
+      var type = gl.FLOAT;   // the data is 32bit floats
+      var normalize = false; // don't normalize the data
+      var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+      var offset = 0;        // start at the beginning of the buffer
+      gl.vertexAttribPointer(
+          texCoordAttributeLocation, size, type, normalize, stride, offset);
+  
+      // Create a texture.
+      var texture = gl.createTexture();
+  
+      // make unit 0 the active texture uint
+      // (ie, the unit all other texture commands will affect
+      gl.activeTexture(gl.TEXTURE0 + 0);
+  
+      // Bind it to texture unit 0' 2D bind point
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+      // Set the parameters so we don't need mips and so we're not filtering
+      // and we don't repeat at the edges
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  
+      // Upload the image into the texture.
+      var mipLevel = 0;               // the largest mip
+      var internalFormat = gl.RGBA;   // format we want in the texture
+      var srcFormat = gl.RGBA;        // format of data we are supplying
+      var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+      
+      gl.texImage2D(gl.TEXTURE_2D,
+                    mipLevel,
+                    internalFormat,
+                    srcFormat,
+                    srcType,
+                    array.image);
+      
+    }
 
     if (array.useColor == 1) 
     {
