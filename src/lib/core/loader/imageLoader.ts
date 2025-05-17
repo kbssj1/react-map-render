@@ -5,7 +5,7 @@ class ImageLoader {
   }
 
   public load(url: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
       let image = new Image()
       
       image.onload = () => resolve(image)

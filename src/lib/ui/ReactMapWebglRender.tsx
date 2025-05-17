@@ -25,8 +25,8 @@ function ReactMapWebglRender(props: PropsType) {
     let positions2: Vec3[] = [];
     let indices2: number[] = [];
     
-    let positions = model[0].positions!.data;
-    let indices = model[0].indices!.data;
+    let positions = model.meshes[0].positions!.data;
+    let indices = model.meshes[0].indices!.data;
     for (let i=0;i<positions.length;i+=3) {
       positions2.push(new Vec3([positions[i] * 10, positions[i+1] * 10, positions[i+2] * 10]));
     }

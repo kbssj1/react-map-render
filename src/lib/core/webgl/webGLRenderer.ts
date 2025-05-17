@@ -2,7 +2,6 @@ import Shader from "./shader";
 import ShaderProgram from "./shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
-import { BufferAndAttribute } from "./bufferAndAttribute";
 import { Mat4 } from "../math/mat4";
 import { Vec3 } from "../math/vec3";
 import Object from "../Object";

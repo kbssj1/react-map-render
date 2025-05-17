@@ -1,4 +1,6 @@
 import * as gltf from './gltf';
+import ImageLoader from './imageLoader';
+import Material from '../Material';
 
 export interface Buffer {
   data: Float32Array | Int16Array;
@@ -27,12 +29,14 @@ class GltfLoader {
     ));
    
     const scene = gltf.scenes![gltf.scene || 0];
-    // const meshes = gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers));
-    const meshes = await Promise.all(
-      gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers))
-    );
+    const materials = gltf.materials ? await Promise.all(gltf.materials.map(async (m) => await this.loadMaterial())) : [];
+    const meshes = await Promise.all(gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers)));
     
-    return meshes;
+    return {
+      scene:scene,
+      meshes:meshes,
+      materials:materials
+    };
   }
 
   private async getBuffer(path: string, buffer: string) {
@@ -63,7 +67,6 @@ class GltfLoader {
     if (mesh.primitives[0].indices !== undefined) {
         const indexAccessor = gltf.accessors![mesh.primitives[0].indices!];
         indexBuffer = this.readBufferFromFile(gltf, buffers, indexAccessor);
-
         elementCount = indexBuffer.data.length;
     } else {
 
@@ -73,6 +76,7 @@ class GltfLoader {
       elementCount,
       indices: indexBuffer,
       positions: this.getBufferFromName(gltf, buffers, mesh, 'POSITION'),
+      texCoord: this.getBufferFromName(gltf, buffers, mesh, 'TEXCOORD_0'),
     };
   }
 
@@ -121,6 +125,16 @@ class GltfLoader {
   private getAccessor (gltf: gltf.GlTf, mesh: gltf.Mesh, attributeName: string) {
     const attribute = mesh.primitives[0].attributes[attributeName];
     return gltf.accessors![attribute];
+  };
+
+  private loadMaterial = async (): Promise<Material> => {
+  
+    let imageLoader = new ImageLoader();
+    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/test.jpg");
+
+    return {
+      image:image
+    } as Material;
   };
 
 };
