@@ -18,5 +18,5 @@ in vec4 v_color;
 out vec4 outColor;
 
 void main() {
-  outColor = texture(u_image, v_texCoord) * v_color;
+  outColor = clamp(texture(u_image, v_texCoord) * v_color, 0.0, 1.0);
 }

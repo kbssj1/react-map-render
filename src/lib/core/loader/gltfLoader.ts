@@ -130,7 +130,7 @@ class GltfLoader {
   private loadMaterial = async (): Promise<Material> => {
   
     let imageLoader = new ImageLoader();
-    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/test.jpg");
+    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/base-color.png");
 
     return {
       image:image

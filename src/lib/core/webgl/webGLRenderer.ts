@@ -59,7 +59,7 @@ class WebGLRenderer {
         position : object.mesh.arrayPositions,
         rotation : object.mesh.rotation,
         indices: object.mesh.getIndices(),
-        texcoords: object.mesh.arrayPositions,
+        texcoords: object.material.texCoord,
         color: object.material.color,
         image: object.material.image,
         useTexture: 1,
@@ -73,13 +73,6 @@ class WebGLRenderer {
         this.toDrawObjects.push(new ToDrawObject(array, object.localPosition, webglProgram, vao, bufferInfo));
       }
     }
-    
-    /*
-    const objs = this.toDrawObjects;
-    for (let i=0;i<objs.length;++i) {
-    }
-    */ 
-    // 
   }
 
   /**
@@ -155,16 +148,15 @@ class WebGLRenderer {
     {
       gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.texcoords), gl.STATIC_DRAW);
-      // Turn on the attribute
+
       gl.enableVertexAttribArray(texCoordAttributeLocation);
-      // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
+
       var size = 2;          // 2 components per iteration
       var type = gl.FLOAT;   // the data is 32bit floats
       var normalize = false; // don't normalize the data
       var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
       var offset = 0;        // start at the beginning of the buffer
-      gl.vertexAttribPointer(
-          texCoordAttributeLocation, size, type, normalize, stride, offset);
+      gl.vertexAttribPointer(texCoordAttributeLocation, size, type, normalize, stride, offset);
   
       // Create a texture.
       var texture = gl.createTexture();

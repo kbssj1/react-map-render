@@ -17,21 +17,24 @@ function ReactMapWebglRender(props: PropsType) {
 
   async function run() {
 
-    let imageLoader = new ImageLoader();
-    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/test.jpg");
     //
     let gltfLoader = new GltfLoader();
-    let model = await gltfLoader.loadModel("http://localhost:3000/Box.gltf");
+    let model = await gltfLoader.loadModel("http://localhost:3000/waterbottle.gltf");
     let positions2: Vec3[] = [];
     let indices2: number[] = [];
+    let texCoord2: number[] = [];
     
     let positions = model.meshes[0].positions!.data;
     let indices = model.meshes[0].indices!.data;
+    let texCoord = model.meshes[0].texCoord!.data;
     for (let i=0;i<positions.length;i+=3) {
       positions2.push(new Vec3([positions[i] * 10, positions[i+1] * 10, positions[i+2] * 10]));
     }
     for (let i=0;i<indices.length;++i) {
       indices2.push(indices[i]);
+    }
+    for (let i=0;i<texCoord.length;++i) {
+      texCoord2.push(texCoord[i]);
     }
     
     function reqeust() {
@@ -45,9 +48,10 @@ function ReactMapWebglRender(props: PropsType) {
     let mesh:Mesh = new Mesh();
     mesh.setPosition(positions2);
     mesh.setIndices(indices2);
-    let material:Material = new Material(new Vec3([10.0, 0.0, 0.0]), image);
+    let material:Material = new Material(new Vec3([0.5, 0.0, 0.0]), model.materials[0].image);
+    material.texCoord = texCoord2;
     let object:Object = new Object(mesh, material);
-    object.localPosition = new Vec3([0, 0, -260]);
+    object.localPosition = new Vec3([0, 0, -10]);
     //
     scene.add(object);
 
