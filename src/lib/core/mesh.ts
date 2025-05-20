@@ -20,8 +20,8 @@ class Mesh extends Base3DClass {
       }
     }
 
-    public get positions() {
-      return this.positions;
+    public get positions() : Vec3[]{
+      return this._positions;
     }
 
     public get indices() : number[] {
