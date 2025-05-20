@@ -13,9 +13,7 @@ export interface Arrays {
   indices: number[],
   texcoords: number[],
   color: Vec3,
-  image: HTMLImageElement,
-  useTexture: number,
-  useColor: number,
+  image: HTMLImageElement
 }
 
 type Nullable<T> = T | null;
@@ -58,15 +56,12 @@ class WebGLRenderer {
       let array:Arrays = {
         position : object.mesh.arrayPositions,
         rotation : object.mesh.rotation,
-        indices: object.mesh.getIndices(),
+        indices: object.mesh.indices,
         texcoords: object.material.texCoord,
         color: object.material.color,
-        image: object.material.image,
-        useTexture: 1,
-        useColor: 1
+        image: object.material.image
       };
       let webglProgram:WebGLProgram = this.createProgram();
-      // let ba:BufferAndAttribute = new BufferAndAttribute(this.gl, webglProgram, array);
       let vao = gl.createVertexArray();  
       if (vao) {
         let bufferInfo = this.createBufferInfoFromArrays(array);
@@ -144,7 +139,7 @@ class WebGLRenderer {
     var offset = 0;        
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
 
-    if (array.useTexture == 1)
+    if (array.texcoords.length > 0)
     {
       gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.texcoords), gl.STATIC_DRAW);
@@ -190,7 +185,7 @@ class WebGLRenderer {
       
     }
 
-    if (array.useColor == 1) 
+    if (array.color) 
     {
       let colorArray:number[] = [];
       for (let i=0;i<array.position.length/3;++i) {
@@ -232,8 +227,7 @@ class WebGLRenderer {
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
       const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
-      const useTextureLocation = gl.getUniformLocation(objs[i].program, "useTexture");
-      const useColorLocation = gl.getUniformLocation(objs[i].program, "useColor");
+
       //
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
@@ -247,8 +241,6 @@ class WebGLRenderer {
       // uniform
       gl.uniform1i(imageLocation, 0);
       gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
-      gl.uniform1i(useTextureLocation, objs[i].array.useTexture);
-      gl.uniform1i(useColorLocation, objs[i].array.useColor);
   
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;

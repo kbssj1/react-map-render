@@ -15,7 +15,7 @@ class Material {
     return this.TexCoord;
   }
 
-  set texCoord(texCoord: number[]) {
+  set texCoord(texCoord: Float32Array | Int16Array) {
     for (let i=0;i<texCoord.length;++i) {
       this.TexCoord.push(texCoord[i]);
     }
