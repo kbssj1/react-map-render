@@ -38,7 +38,7 @@ function ReactMapWebglRender(props: PropsType) {
     let material:Material = new Material(new Vec3([0.5, 0.0, 0.0]), model.materials[0].image);
     material.texCoord = texCoord;
     let object:Object = new Object(mesh, material);
-    object.localPosition = new Vec3([0, 0, -10]);
+    object.localPosition = new Vec3([0, 0, -2]);
     //
     scene.add(object);
 

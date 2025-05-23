@@ -6,6 +6,8 @@ import { Mat4 } from "../math/mat4";
 import { Vec3 } from "../math/vec3";
 import Object from "../Object";
 import Scene from "../scene";
+import Camera from "../camera";
+import Inputs from "../inputs";
 
 export interface Arrays {
   position: number[],
@@ -44,6 +46,8 @@ class WebGLRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
   private toDrawObjects:ToDrawObject[] = [];
+  private camera:Camera;
+  private inputs:Inputs;
 
   public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
@@ -51,6 +55,9 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
+    this.camera = new Camera(new Vec3([0, 0, 0]), "camera");
+    this.createInputs();
+    
     for (let i=0;i<scene.getObjectLength();++i) {
       let object = (scene.getObject(i) as Object);
       let array:Arrays = {
@@ -111,6 +118,16 @@ class WebGLRenderer {
     };
     
     return bufferInfo;
+  }
+
+  private createInputs() {
+
+    const zoom = (delta: number) => {
+      this.camera.localPosition.z += delta;
+      if (this.camera.localPosition.z < 0.0) this.camera.localPosition.z = 0.0;
+    };
+
+    this.inputs = new Inputs(this.canvas, zoom);
   }
 
   private setBuffersAndAttributes(array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {
@@ -231,7 +248,7 @@ class WebGLRenderer {
       //
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-      let cameraMatrix = Mat4.lookAt(new Vec3([0, 0, 0]), objs[i].localPosition);
+      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].localPosition);
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
       viewProjectionMatrix.translate(objs[i].localPosition);

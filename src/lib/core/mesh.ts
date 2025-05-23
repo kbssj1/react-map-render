@@ -16,7 +16,7 @@ class Mesh extends Base3DClass {
 
     public set positions(positions: Float32Array | Int16Array) {
       for (let i=0;i<positions.length;i+=3) {
-        this._positions.push(new Vec3([positions[i] * 10, positions[i+1] * 10, positions[i+2] * 10]));
+        this._positions.push(new Vec3([positions[i], positions[i+1], positions[i+2]]));
       }
     }
 
