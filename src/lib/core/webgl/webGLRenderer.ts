@@ -56,13 +56,14 @@ class WebGLRenderer {
     //
     this.toDrawObjects = [];
     this.camera = new Camera(new Vec3([0, 0, 0]), "camera");
+    this.inputs = new Inputs(this.canvas);
     this.createInputs();
     
     for (let i=0;i<scene.getObjectLength();++i) {
       let object = (scene.getObject(i) as Object);
       let array:Arrays = {
         position : object.mesh.arrayPositions,
-        rotation : object.mesh.rotation,
+        rotation : object.mesh.localRotation,
         indices: object.mesh.indices,
         texcoords: object.material.texCoord,
         color: object.material.color,
@@ -122,12 +123,19 @@ class WebGLRenderer {
 
   private createInputs() {
 
+    const move = (position: Vec3) => {
+      this.camera.localPosition.x += position.x;
+      this.camera.localPosition.y += position.y;
+      this.camera.localPosition.z += position.z;
+      // console.log(this.camera.localRotation);
+    };
+
     const zoom = (delta: number) => {
       this.camera.localPosition.z += delta;
       if (this.camera.localPosition.z < 0.0) this.camera.localPosition.z = 0.0;
     };
 
-    this.inputs = new Inputs(this.canvas, zoom);
+    this.inputs.listen(zoom, move);
   }
 
   private setBuffersAndAttributes(array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {

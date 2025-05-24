@@ -3,7 +3,7 @@ import { Vec3 } from "./math/vec3";
 abstract class Base3dClass {
 
     private _localPosition : Vec3 = new Vec3()
-    private _rotation : Vec3 = new Vec3()
+    private _localRotation : Vec3 = new Vec3()
 
     public name: string = "object";
 
@@ -24,12 +24,12 @@ abstract class Base3dClass {
         this._localPosition = position;
     }
 
-    public get rotation() : Vec3{
-        return this._rotation
+    public get localRotation() : Vec3{
+        return this._localRotation
     }
 
-    public set rotation(rotation: Vec3) {
-        this._rotation = rotation;
+    public set localRotation(rotation: Vec3) {
+        this._localRotation = rotation;
     }
 }
   
