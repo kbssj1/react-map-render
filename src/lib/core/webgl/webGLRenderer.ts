@@ -11,6 +11,7 @@ import Inputs from "../inputs";
 
 export interface Arrays {
   position: number[],
+  normal:number[],
   rotation: Vec3,
   indices: number[],
   texcoords: number[],
@@ -63,6 +64,7 @@ class WebGLRenderer {
       let object = (scene.getObject(i) as Object);
       let array:Arrays = {
         position : object.mesh.arrayPositions,
+        normal: object.mesh.arrayNormal,
         rotation : object.mesh.localRotation,
         indices: object.mesh.indices,
         texcoords: object.material.texCoord,

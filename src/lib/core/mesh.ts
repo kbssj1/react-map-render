@@ -4,6 +4,7 @@ import Base3DClass from "./base3DClass";
 class Mesh extends Base3DClass {
 
     private _positions: Vec3[] = [];
+    private _normal: Vec3[] = [];
     private _indices: number[] = [];
 
     constructor() {
@@ -34,12 +35,32 @@ class Mesh extends Base3DClass {
       }
     }
 
+    public get normal() : Vec3[] {
+      return this._normal;
+    }
+
+    public set normal(normal: Float32Array | Int16Array) {
+      for (let i=0;i<normal.length;i+=3) {
+        this._normal.push(new Vec3([normal[i], normal[i+1], normal[i+2]]));
+      }
+    }
+
     get arrayPositions() : number[] {
       let array = [];
       for (let i=0;i<this.positions.length;++i) {
         array.push(this._positions[i].x);
         array.push(this._positions[i].y);
         array.push(this._positions[i].z);
+      }
+      return array;
+    }
+
+    get arrayNormal() : number[] {
+      let array = [];
+      for (let i=0;i<this.normal.length;++i) {
+        array.push(this._normal[i].x);
+        array.push(this._normal[i].y);
+        array.push(this._normal[i].z);
       }
       return array;
     }

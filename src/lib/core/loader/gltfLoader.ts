@@ -75,6 +75,7 @@ class GltfLoader {
     return {
       elementCount,
       indices: indexBuffer,
+      normals: this.getBufferFromName(gltf, buffers, mesh, 'NORMAL'),
       positions: this.getBufferFromName(gltf, buffers, mesh, 'POSITION'),
       texCoord: this.getBufferFromName(gltf, buffers, mesh, 'TEXCOORD_0'),
     };
