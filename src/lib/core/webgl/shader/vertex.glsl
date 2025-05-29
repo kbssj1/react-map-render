@@ -4,7 +4,7 @@
 // It will receive data from a buffer
 in vec4 a_position;
 in vec2 a_texCoord;
-
+in vec3 a_normal;
 in vec4 a_color;
 
 // Used to pass the texture coordinates to the fragment shader

@@ -24,6 +24,7 @@ export interface BufferInfo {
   positionBuffer: Nullable<WebGLBuffer>,
   indexBuffer: Nullable<WebGLBuffer>,
   colorBuffer: Nullable<WebGLBuffer>,
+  normalBuffer: Nullable<WebGLBuffer>,
   texCoordBuffer: Nullable<WebGLBuffer>
 }
 
@@ -113,11 +114,13 @@ class WebGLRenderer {
     let indexBuffer = gl.createBuffer();
     let colorBuffer = gl.createBuffer();
     let texCoordBuffer = gl.createBuffer();
+    let normalBuffer = gl.createBuffer();
     let bufferInfo:BufferInfo = {
       positionBuffer : positionBuffer,
       indexBuffer : indexBuffer,
       colorBuffer : colorBuffer,
-      texCoordBuffer : texCoordBuffer
+      texCoordBuffer : texCoordBuffer,
+      normalBuffer: normalBuffer
     };
     
     return bufferInfo;
@@ -231,6 +234,22 @@ class WebGLRenderer {
       let stride = 0;        
       let offset = 0;      
       gl.vertexAttribPointer(colorAttributeLocation, size, type, normalize, stride, offset);
+    }
+
+    if (array.normal.length > 0) 
+    {
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.normalBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.normal), gl.STATIC_DRAW);
+      let normalAttributeLocation = gl.getAttribLocation(program, "a_normal");
+  
+      // Turn on the attribute
+      gl.enableVertexAttribArray(normalAttributeLocation);
+      var size = 3;          
+      var type = gl.FLOAT;   
+      var normalize = false; 
+      var stride = 0;       
+      var offset = 0;        
+      gl.vertexAttribPointer(normalAttributeLocation, size, type, normalize, stride, offset);
     }
   }
 
