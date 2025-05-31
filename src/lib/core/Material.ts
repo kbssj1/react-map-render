@@ -1,12 +1,14 @@
 import { Vec3 } from "./math/vec3";
 
+type Nullable<T> = T | null;
+
 class Material {
 
   private TexCoord: number[] = [];
-  public color:Vec3 = new Vec3([0.1, 0.8, 0.1]);
+  public color:Nullable<Vec3> = null;
   public image:HTMLImageElement;
 
-  constructor(color:Vec3, image:HTMLImageElement) {
+  constructor(color:Nullable<Vec3>, image:HTMLImageElement) {
     this.color = color;
     this.image = image;
   }

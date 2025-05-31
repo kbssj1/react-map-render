@@ -15,7 +15,7 @@ export interface Arrays {
   rotation: Vec3,
   indices: number[],
   texcoords: number[],
-  color: Vec3,
+  color: Nullable<Vec3>,
   image: HTMLImageElement
 }
 
