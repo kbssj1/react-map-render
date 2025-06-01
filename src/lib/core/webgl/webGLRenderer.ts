@@ -8,6 +8,7 @@ import Object from "../Object";
 import Scene from "../scene";
 import Camera from "../camera";
 import Inputs from "../inputs";
+import DirectionalLighting from "../directionalLighting";
 
 export interface Arrays {
   position: number[],
@@ -62,21 +63,27 @@ class WebGLRenderer {
     this.createInputs();
     
     for (let i=0;i<scene.getObjectLength();++i) {
-      let object = (scene.getObject(i) as Object);
-      let array:Arrays = {
-        position : object.mesh.arrayPositions,
-        normal: object.mesh.arrayNormal,
-        rotation : object.mesh.localRotation,
-        indices: object.mesh.indices,
-        texcoords: object.material.texCoord,
-        color: object.material.color,
-        image: object.material.image
-      };
-      let webglProgram:WebGLProgram = this.createProgram();
-      let vao = gl.createVertexArray();  
-      if (vao) {
-        let bufferInfo = this.createBufferInfoFromArrays(array);
-        this.toDrawObjects.push(new ToDrawObject(array, object.localPosition, webglProgram, vao, bufferInfo));
+      if (scene.getObject(i) instanceof Object) {
+        let object = (scene.getObject(i) as Object);
+        let array:Arrays = {
+          position : object.mesh.arrayPositions,
+          normal: object.mesh.arrayNormal,
+          rotation : object.mesh.localRotation,
+          indices: object.mesh.indices,
+          texcoords: object.material.texCoord,
+          color: object.material.color,
+          image: object.material.image
+        };
+        let webglProgram:WebGLProgram = this.createProgram();
+        let vao = gl.createVertexArray();  
+        if (vao) {
+          let bufferInfo = this.createBufferInfoFromArrays(array);
+          this.toDrawObjects.push(new ToDrawObject(array, object.localPosition, webglProgram, vao, bufferInfo));
+        }
+      }
+      else if (scene.getObject(i) instanceof DirectionalLighting)
+      {
+        
       }
     }
   }
@@ -146,7 +153,6 @@ class WebGLRenderer {
   private setBuffersAndAttributes(array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {
     let gl = this.gl;
     let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-    let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.position), gl.STATIC_DRAW);
@@ -171,6 +177,7 @@ class WebGLRenderer {
 
     if (array.texcoords.length > 0)
     {
+      let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
       gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.texcoords), gl.STATIC_DRAW);
 
@@ -212,7 +219,6 @@ class WebGLRenderer {
                     srcFormat,
                     srcType,
                     array.image);
-      
     }
 
     if (array.color) 
@@ -273,6 +279,8 @@ class WebGLRenderer {
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
       const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
+      const directionLightingColor = gl.getUniformLocation(objs[i].program, "direct_light_color");
+      const directionLightingDirection = gl.getUniformLocation(objs[i].program, "direct_light_direction");
 
       //
       let projectionMatrix:Mat4 = Mat4.identity;
