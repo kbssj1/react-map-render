@@ -9,6 +9,7 @@ import Scene from "../scene";
 import Camera from "../camera";
 import Inputs from "../inputs";
 import DirectionalLighting from "../directionalLighting";
+import Environment from "../environment";
 
 export interface Arrays {
   position: number[],
@@ -51,6 +52,7 @@ class WebGLRenderer {
   private toDrawObjects:ToDrawObject[] = [];
   private camera:Camera;
   private inputs:Inputs;
+  private environment:Environment;
 
   public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
@@ -61,6 +63,7 @@ class WebGLRenderer {
     this.camera = new Camera(new Vec3([0, 0, 0]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.createInputs();
+    let directionalLighting:DirectionalLighting = new DirectionalLighting(new Vec3([0,0,0]), new Vec3([0, 0, 0]));
     
     for (let i=0;i<scene.getObjectLength();++i) {
       if (scene.getObject(i) instanceof Object) {
@@ -83,9 +86,10 @@ class WebGLRenderer {
       }
       else if (scene.getObject(i) instanceof DirectionalLighting)
       {
-        
+        directionalLighting = (scene.getObject(i) as DirectionalLighting);
       }
     }
+    this.environment = new Environment(directionalLighting);
   }
 
   /**
@@ -295,7 +299,9 @@ class WebGLRenderer {
       // uniform
       gl.uniform1i(imageLocation, 0);
       gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
-  
+      gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
+      gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);
+
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
       var offset = 0; 
