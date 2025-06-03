@@ -202,6 +202,8 @@ export class Mat4 {
     return result;
   }
 
+  // https://en.wikipedia.org/wiki/Invertible_matrix
+  // AA-1 = A-1A = I, where I is the Identity matrix
   inverse(): Mat4 {
     const a00 = this.values[0]
     const a01 = this.values[1]
