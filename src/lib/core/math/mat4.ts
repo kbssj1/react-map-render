@@ -258,6 +258,30 @@ export class Mat4 {
     return this
   }
 
+  transpose(): Mat4 {
+    const temp01 = this.values[1]
+    const temp02 = this.values[2]
+    const temp03 = this.values[3]
+    const temp12 = this.values[6]
+    const temp13 = this.values[7]
+    const temp23 = this.values[11]
+
+    this.values[1] = this.values[4]
+    this.values[2] = this.values[8]
+    this.values[3] = this.values[12]
+    this.values[4] = temp01
+    this.values[6] = this.values[9]
+    this.values[7] = this.values[13]
+    this.values[8] = temp02
+    this.values[9] = temp12
+    this.values[11] = this.values[14]
+    this.values[12] = temp03
+    this.values[13] = temp13
+    this.values[14] = temp23
+
+    return this
+  } 
+
   static lookAt(position: Vec3, target: Vec3, up: Vec3 = Vec3.up): Mat4 {
     if (position.equals(target)) {
         return this.identity
