@@ -23,6 +23,7 @@ function ReactMapWebglRender(props: PropsType) {
     let positions = model.meshes[0].positions!.data;
     let indices = model.meshes[0].indices!.data;
     let texCoord = model.meshes[0].texCoord!.data;
+    let normals = model.meshes[0].normals!.data;
 
     function reqeust() {
       //mesh2.rotation = new Vec3([mesh2.rotation.x+0.001, 0, 0]);
@@ -35,6 +36,7 @@ function ReactMapWebglRender(props: PropsType) {
     let mesh:Mesh = new Mesh();
     mesh.positions = positions;
     mesh.indices = indices;
+    mesh.normal = normals;
     let material:Material = new Material(null, model.materials[0].image);
     material.texCoord = texCoord;
     let object:Object = new Object(mesh, material);

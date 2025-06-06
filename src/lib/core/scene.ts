@@ -7,7 +7,7 @@ class Scene {
     private objects: Base3DClass[] = []; 
 
     constructor() {
-        this.add(new DirectionalLighting(new Vec3([0.2, 1, 0.2]), new Vec3([0.5, 0.7, 1])));
+        this.add(new DirectionalLighting(new Vec3([0.2, 1, 0.2]), new Vec3([0.5, 0.7, -1.0])));
     }
 
     public add(obj : Base3DClass) {

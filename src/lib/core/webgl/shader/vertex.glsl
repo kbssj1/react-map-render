@@ -15,6 +15,8 @@ uniform mat4 u_matrix;
 
 out vec4 v_color;
 
+out vec3 v_normal;
+
 // all shaders have a main function
 void main() {
   gl_Position = u_matrix * a_position;
@@ -24,4 +26,6 @@ void main() {
   v_texCoord = a_texCoord;
 
   v_color = a_color;
+
+  v_normal = mat3(u_matrix) * a_normal;
 }

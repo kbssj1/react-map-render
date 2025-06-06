@@ -283,8 +283,8 @@ class WebGLRenderer {
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
       const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
-      const directionLightingColor = gl.getUniformLocation(objs[i].program, "direct_light_color");
-      const directionLightingDirection = gl.getUniformLocation(objs[i].program, "direct_light_direction");
+      const directionLightingColor = gl.getUniformLocation(objs[i].program, "u_direct_light_color");
+      const directionLightingDirection = gl.getUniformLocation(objs[i].program, "u_direct_light_direction");
 
       //
       let projectionMatrix:Mat4 = Mat4.identity;
