@@ -29,7 +29,7 @@ class GltfLoader {
     ));
     const dir = (url.split('/').slice(0, -1).join('/'));
     const scene = gltf.scenes![gltf.scene || 0];
-    const materials = gltf.materials ? await Promise.all(gltf.materials.map(async (m) => await this.loadMaterial(dir))) : [];
+    const materials = gltf.materials ? await Promise.all(gltf.materials.map(async (m) => await this.loadMaterial(dir, m, gltf.images))) : [];
     const meshes = await Promise.all(gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers)));
     
     return {
@@ -128,13 +128,20 @@ class GltfLoader {
     return gltf.accessors![attribute];
   };
 
-  private loadMaterial = async (dir:string): Promise<Material> => {
+  private loadMaterial = async (dir:string, material: gltf.Material, images?: gltf.Image[]): Promise<Material> => {
   
     let imageLoader = new ImageLoader();
-    let image:HTMLImageElement = await imageLoader.load(dir + "/base-color.png");
-
+    let baseColorImage:HTMLImageElement = await imageLoader.load(dir + "/" + images![0].uri);
+    let emissiveImage:HTMLImageElement = null;
+  
+    if (material.emissiveTexture) {
+      const uri = images![material.emissiveTexture.index].uri!;
+      emissiveImage = await imageLoader.load(dir + "/" + uri);
+    }
+    
     return {
-      image:image
+      image:baseColorImage,
+      emissiveImage: emissiveImage
     } as Material;
   };
 

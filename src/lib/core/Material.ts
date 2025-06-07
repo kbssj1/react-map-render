@@ -7,10 +7,12 @@ class Material {
   private TexCoord: number[] = [];
   public color:Nullable<Vec3> = null;
   public image:HTMLImageElement;
+  public emissiveImage:HTMLImageElement;
 
-  constructor(color:Nullable<Vec3>, image:HTMLImageElement) {
+  constructor(color:Nullable<Vec3>, image:HTMLImageElement, emissiveImage:HTMLImageElement) {
     this.color = color;
     this.image = image;
+    this.emissiveImage = emissiveImage;
   }
 
   get texCoord() : number[] {
