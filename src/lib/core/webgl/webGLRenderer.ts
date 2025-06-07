@@ -4,7 +4,7 @@ import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { Mat4 } from "../math/mat4";
 import { Vec3 } from "../math/vec3";
-import Object from "../Object";
+import Object from "../object";
 import Scene from "../scene";
 import Camera from "../camera";
 import Inputs from "../inputs";

@@ -27,9 +27,9 @@ class GltfLoader {
     const buffers = await Promise.all(
       gltf.buffers!.map(async (b) => await this.getBuffer(url, b.uri!)
     ));
-   
+    const dir = (url.split('/').slice(0, -1).join('/'));
     const scene = gltf.scenes![gltf.scene || 0];
-    const materials = gltf.materials ? await Promise.all(gltf.materials.map(async (m) => await this.loadMaterial())) : [];
+    const materials = gltf.materials ? await Promise.all(gltf.materials.map(async (m) => await this.loadMaterial(dir))) : [];
     const meshes = await Promise.all(gltf.meshes!.map(m => this.loadMesh(gltf, m, buffers)));
     
     return {
@@ -128,10 +128,10 @@ class GltfLoader {
     return gltf.accessors![attribute];
   };
 
-  private loadMaterial = async (): Promise<Material> => {
+  private loadMaterial = async (dir:string): Promise<Material> => {
   
     let imageLoader = new ImageLoader();
-    let image:HTMLImageElement = await imageLoader.load("http://localhost:3000/base-color.png");
+    let image:HTMLImageElement = await imageLoader.load(dir + "/base-color.png");
 
     return {
       image:image

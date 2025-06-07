@@ -3,7 +3,7 @@ import WebGLRenderer from "../core/webgl/webGLRenderer";
 import GltfLoader from "../core/loader/gltfLoader";
 import Scene from '../core/scene';
 import Mesh from '../core/mesh';
-import Object from '../core/Object';
+import Object from '../core/object';
 import { Vec3 } from '../core/math/vec3';
 import Material from '../core/Material';
 
@@ -18,7 +18,7 @@ function ReactMapWebglRender(props: PropsType) {
 
     //
     let gltfLoader = new GltfLoader();
-    let model = await gltfLoader.loadModel("http://localhost:3000/waterbottle.gltf");
+    let model = await gltfLoader.loadModel("http://localhost:3000/gltf/waterBottle/waterbottle.gltf");
     
     let positions = model.meshes[0].positions!.data;
     let indices = model.meshes[0].indices!.data;
