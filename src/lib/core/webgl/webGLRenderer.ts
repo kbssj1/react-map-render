@@ -10,15 +10,13 @@ import Camera from "../camera";
 import Inputs from "../inputs";
 import DirectionalLighting from "../directionalLighting";
 import Environment from "../environment";
+import Mesh from "../mesh";
+import Material from "../Material";
+import BuffersAndAttributes from "./BuffersAndAttributes";
 
 export interface Arrays {
-  position: number[],
-  normal:number[],
-  rotation: Vec3,
-  indices: number[],
-  texcoords: number[],
-  color: Nullable<Vec3>,
-  image: HTMLImageElement
+  mesh: Mesh,
+  material: Material
 }
 
 type Nullable<T> = T | null;
@@ -53,6 +51,7 @@ class WebGLRenderer {
   private camera:Camera;
   private inputs:Inputs;
   private environment:Environment;
+  private buffersAndAttributes:BuffersAndAttributes;
 
   public constructor(canvas: HTMLCanvasElement, scene:Scene) {
     this.gl = canvas.getContext("webgl2")!;
@@ -62,6 +61,7 @@ class WebGLRenderer {
     this.toDrawObjects = [];
     this.camera = new Camera(new Vec3([0, 0, 0]), "camera");
     this.inputs = new Inputs(this.canvas);
+    this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
     let directionalLighting:DirectionalLighting = new DirectionalLighting(new Vec3([0,0,0]), new Vec3([0, 0, 0]));
     
@@ -69,18 +69,13 @@ class WebGLRenderer {
       if (scene.getObject(i) instanceof Object) {
         let object = (scene.getObject(i) as Object);
         let array:Arrays = {
-          position : object.mesh.arrayPositions,
-          normal: object.mesh.arrayNormal,
-          rotation : object.mesh.localRotation,
-          indices: object.mesh.indices,
-          texcoords: object.material.texCoord,
-          color: object.material.color,
-          image: object.material.image
+          mesh:object.mesh,
+          material:object.material
         };
         let webglProgram:WebGLProgram = this.createProgram();
         let vao = gl.createVertexArray();  
         if (vao) {
-          let bufferInfo = this.createBufferInfoFromArrays(array);
+          let bufferInfo = this.buffersAndAttributes.createBufferInfoFromArrays(gl);
           this.toDrawObjects.push(new ToDrawObject(array, object.localPosition, webglProgram, vao, bufferInfo));
         }
       }
@@ -119,24 +114,6 @@ class WebGLRenderer {
     return webglProgram;
   }
 
-  private createBufferInfoFromArrays(array:Arrays) : BufferInfo {
-    let gl = this.gl;
-    let positionBuffer = gl.createBuffer();
-    let indexBuffer = gl.createBuffer();
-    let colorBuffer = gl.createBuffer();
-    let texCoordBuffer = gl.createBuffer();
-    let normalBuffer = gl.createBuffer();
-    let bufferInfo:BufferInfo = {
-      positionBuffer : positionBuffer,
-      indexBuffer : indexBuffer,
-      colorBuffer : colorBuffer,
-      texCoordBuffer : texCoordBuffer,
-      normalBuffer: normalBuffer
-    };
-    
-    return bufferInfo;
-  }
-
   private createInputs() {
 
     const move = (position: Vec3) => {
@@ -154,115 +131,6 @@ class WebGLRenderer {
     this.inputs.listen(zoom, move);
   }
 
-  private setBuffersAndAttributes(array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {
-    let gl = this.gl;
-    let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.position), gl.STATIC_DRAW);
-    if (array.indices.length > 0) {
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferInfo.indexBuffer);
-      const indices = array.indices;
-      gl.bufferData(
-          gl.ELEMENT_ARRAY_BUFFER,
-          new Uint16Array(indices),
-          gl.STATIC_DRAW
-      );
-    }
-
-    // Turn on the attribute
-    gl.enableVertexAttribArray(positionAttributeLocation);
-    var size = 3;          
-    var type = gl.FLOAT;   
-    var normalize = false; 
-    var stride = 0;       
-    var offset = 0;        
-    gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
-
-    if (array.texcoords.length > 0)
-    {
-      let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
-      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.texcoords), gl.STATIC_DRAW);
-
-      gl.enableVertexAttribArray(texCoordAttributeLocation);
-
-      var size = 2;          // 2 components per iteration
-      var type = gl.FLOAT;   // the data is 32bit floats
-      var normalize = false; // don't normalize the data
-      var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-      var offset = 0;        // start at the beginning of the buffer
-      gl.vertexAttribPointer(texCoordAttributeLocation, size, type, normalize, stride, offset);
-  
-      // Create a texture.
-      var texture = gl.createTexture();
-  
-      // make unit 0 the active texture uint
-      // (ie, the unit all other texture commands will affect
-      gl.activeTexture(gl.TEXTURE0 + 0);
-  
-      // Bind it to texture unit 0' 2D bind point
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-  
-      // Set the parameters so we don't need mips and so we're not filtering
-      // and we don't repeat at the edges
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  
-      // Upload the image into the texture.
-      var mipLevel = 0;               // the largest mip
-      var internalFormat = gl.RGBA;   // format we want in the texture
-      var srcFormat = gl.RGBA;        // format of data we are supplying
-      var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-      
-      gl.texImage2D(gl.TEXTURE_2D,
-                    mipLevel,
-                    internalFormat,
-                    srcFormat,
-                    srcType,
-                    array.image);
-    }
-
-    if (array.color) 
-    {
-      let colorArray:number[] = [];
-      for (let i=0;i<array.position.length/3;++i) {
-        colorArray.push(array.color.x);
-        colorArray.push(array.color.y);
-        colorArray.push(array.color.z);
-      }
-      let colorAttributeLocation = gl.getAttribLocation(program, "a_color");
-      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.colorBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorArray), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(colorAttributeLocation);
-
-      let size = 3;    
-      let type = gl.FLOAT;   
-      let normalize = false; 
-      let stride = 0;        
-      let offset = 0;      
-      gl.vertexAttribPointer(colorAttributeLocation, size, type, normalize, stride, offset);
-    }
-
-    if (array.normal.length > 0) 
-    {
-      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.normalBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.normal), gl.STATIC_DRAW);
-      let normalAttributeLocation = gl.getAttribLocation(program, "a_normal");
-  
-      // Turn on the attribute
-      gl.enableVertexAttribArray(normalAttributeLocation);
-      var size = 3;          
-      var type = gl.FLOAT;   
-      var normalize = false; 
-      var stride = 0;       
-      var offset = 0;        
-      gl.vertexAttribPointer(normalAttributeLocation, size, type, normalize, stride, offset);
-    }
-  }
-
   public draw() {
     const gl = this.gl;
     const objs = this.toDrawObjects;
@@ -278,7 +146,7 @@ class WebGLRenderer {
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
-      this.setBuffersAndAttributes(objs[i].array, objs[i].bufferInfo, objs[i].program);
+      this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].array, objs[i].bufferInfo, objs[i].program);
 
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
@@ -305,10 +173,10 @@ class WebGLRenderer {
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
       var offset = 0; 
-      var count = objs[i].array.position.length / 3;
+      var count = objs[i].array.mesh.arrayPositions.length / 3;
 
-      if (objs[i].array.indices.length > 0) {
-        gl.drawElements(primitiveType, objs[i].array.indices.length, gl.UNSIGNED_SHORT, offset);
+      if (objs[i].array.mesh.indices.length > 0) {
+        gl.drawElements(primitiveType, objs[i].array.mesh.indices.length, gl.UNSIGNED_SHORT, offset);
       } else {
         gl.drawArrays(primitiveType, offset, count);
       }
