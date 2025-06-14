@@ -10,14 +10,7 @@ import Camera from "../camera";
 import Inputs from "../inputs";
 import DirectionalLighting from "../directionalLighting";
 import Environment from "../environment";
-import Mesh from "../mesh";
-import Material from "../Material";
 import BuffersAndAttributes from "./BuffersAndAttributes";
-
-export interface Arrays {
-  mesh: Mesh,
-  material: Material
-}
 
 type Nullable<T> = T | null;
 export interface BufferInfo {
@@ -29,15 +22,13 @@ export interface BufferInfo {
 }
 
 class ToDrawObject {
-  public array:Arrays
-  public localPosition:Vec3
+  public object:Object
   public program:WebGLProgram
   public vertexArray:WebGLVertexArrayObject
   public bufferInfo:BufferInfo
 
-  constructor(array: Arrays, localPosition: Vec3, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
-    this.array = array;
-    this.localPosition = localPosition;
+  constructor(object: Object, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
+    this.object = object;
     this.program = program;
     this.vertexArray = vertexArray;
     this.bufferInfo = bufferInfo;
@@ -68,15 +59,11 @@ class WebGLRenderer {
     for (let i=0;i<scene.getObjectLength();++i) {
       if (scene.getObject(i) instanceof Object) {
         let object = (scene.getObject(i) as Object);
-        let array:Arrays = {
-          mesh:object.mesh,
-          material:object.material
-        };
         let webglProgram:WebGLProgram = this.createProgram();
         let vao = gl.createVertexArray();  
         if (vao) {
           let bufferInfo = this.buffersAndAttributes.createBufferInfoFromArrays(gl);
-          this.toDrawObjects.push(new ToDrawObject(array, object.localPosition, webglProgram, vao, bufferInfo));
+          this.toDrawObjects.push(new ToDrawObject(object, webglProgram, vao, bufferInfo));
         }
       }
       else if (scene.getObject(i) instanceof DirectionalLighting)
@@ -146,7 +133,7 @@ class WebGLRenderer {
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
-      this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].array, objs[i].bufferInfo, objs[i].program);
+      this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].object, objs[i].bufferInfo, objs[i].program);
 
       // lookup uniforms
       const imageLocation = gl.getUniformLocation(objs[i].program, "u_image");
@@ -157,12 +144,12 @@ class WebGLRenderer {
       //
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].localPosition);
+      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
-      viewProjectionMatrix.translate(objs[i].localPosition);
+      viewProjectionMatrix.translate(objs[i].object.localPosition);
       viewProjectionMatrix.scale(new Vec3([3, 3, 3]));
-      viewProjectionMatrix.rotate(40 * (Math.PI / 180), new Vec3([1, 0, 0]));
+      // viewProjectionMatrix.rotate(0.2, objs[i].localRotation);
 
       // uniform
       gl.uniform1i(imageLocation, 0);
@@ -173,10 +160,10 @@ class WebGLRenderer {
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
       var offset = 0; 
-      var count = objs[i].array.mesh.arrayPositions.length / 3;
+      var count = objs[i].object.mesh.arrayPositions.length / 3;
 
-      if (objs[i].array.mesh.indices.length > 0) {
-        gl.drawElements(primitiveType, objs[i].array.mesh.indices.length, gl.UNSIGNED_SHORT, offset);
+      if (objs[i].object.mesh.indices.length > 0) {
+        gl.drawElements(primitiveType, objs[i].object.mesh.indices.length, gl.UNSIGNED_SHORT, offset);
       } else {
         gl.drawArrays(primitiveType, offset, count);
       }

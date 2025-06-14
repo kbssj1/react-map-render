@@ -24,12 +24,6 @@ function ReactMapWebglRender(props: PropsType) {
     let indices = model.meshes[0].indices!.data;
     let texCoord = model.meshes[0].texCoord!.data;
     let normals = model.meshes[0].normals!.data;
-
-    function reqeust() {
-      //mesh2.rotation = new Vec3([mesh2.rotation.x+0.001, 0, 0]);
-      webgl.draw();
-      requestAnimationFrame(reqeust);
-    }
     
     let scene:Scene = new Scene();
     //
@@ -40,9 +34,16 @@ function ReactMapWebglRender(props: PropsType) {
     let material:Material = new Material(null, model.materials[0].image, model.materials[0].emissiveImage);
     material.texCoord = texCoord;
     let object:Object = new Object(mesh, material);
-    object.localPosition = new Vec3([0, 0, -2]);
+    object.localPosition = new Vec3([0, 0, -3]);
+    object.localRotation = new Vec3([1, 0, 0]);
     //
     scene.add(object);
+
+    function reqeust() {
+      object.localPosition = new Vec3([object.localPosition.x+0.001, 0, -3]);
+      webgl.draw();
+      requestAnimationFrame(reqeust);
+    }
 
     let webgl: WebGLRenderer;
     let canvas:HTMLCanvasElement | null = document.querySelector("#c");

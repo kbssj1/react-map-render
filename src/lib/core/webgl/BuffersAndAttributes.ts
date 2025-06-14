@@ -1,5 +1,5 @@
+import Object from "../object";
 import { BufferInfo } from "./webGLRenderer";
-import { Arrays } from "./webGLRenderer";
 
 class BuffersAndAttributes {
 
@@ -20,14 +20,14 @@ class BuffersAndAttributes {
     return bufferInfo;
   }
 
-  public setBuffersAndAttributes(gl: WebGL2RenderingContext, array:Arrays, bufferInfo: BufferInfo, program: WebGLProgram) {
+  public setBuffersAndAttributes(gl: WebGL2RenderingContext, object:Object, bufferInfo: BufferInfo, program: WebGLProgram) {
     let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.mesh.arrayPositions), gl.STATIC_DRAW);
-    if (array.mesh.indices.length > 0) {
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.mesh.arrayPositions), gl.STATIC_DRAW);
+    if (object.mesh.indices.length > 0) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferInfo.indexBuffer);
-      const indices = array.mesh.indices;
+      const indices = object.mesh.indices;
       gl.bufferData(
           gl.ELEMENT_ARRAY_BUFFER,
           new Uint16Array(indices),
@@ -44,11 +44,11 @@ class BuffersAndAttributes {
     var offset = 0;        
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
 
-    if (array.material.texCoord.length > 0)
+    if (object.material.texCoord.length > 0)
     {
       let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
       gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.texCoordBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.material.texCoord), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.material.texCoord), gl.STATIC_DRAW);
 
       gl.enableVertexAttribArray(texCoordAttributeLocation);
 
@@ -87,13 +87,28 @@ class BuffersAndAttributes {
                     internalFormat,
                     srcFormat,
                     srcType,
-                    array.material.image);
+                    object.material.image);
+
+      var u_image0Location = gl.getUniformLocation(program, "u_image");
+      gl.uniform1i(u_image0Location, 0);
     }
 
-    if (array.mesh.normal.length > 0) 
+    if (object.material.texCoord.length > 0 && object.material.emissiveImage) {
+      const texture = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0 + 1);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, object.material.emissiveImage);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+      var u_image0Location2 = gl.getUniformLocation(program, "u_emissiveImage");
+      gl.uniform1i(u_image0Location2, 1);
+    }
+
+    if (object.mesh.normal.length > 0) 
     {
       gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.normalBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array.mesh.arrayNormal), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.mesh.arrayNormal), gl.STATIC_DRAW);
       let normalAttributeLocation = gl.getAttribLocation(program, "a_normal");
   
       // Turn on the attribute
