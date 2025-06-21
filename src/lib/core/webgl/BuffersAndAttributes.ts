@@ -100,6 +100,7 @@ class BuffersAndAttributes {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, object.material.emissiveImage);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.generateMipmap(gl.TEXTURE_2D);
 
       var u_image0Location2 = gl.getUniformLocation(program, "u_emissiveImage");
       gl.uniform1i(u_image0Location2, 1);

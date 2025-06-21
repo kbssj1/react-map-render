@@ -6,6 +6,7 @@ precision highp float;
 
 // our texture
 uniform sampler2D u_image;
+uniform sampler2D u_emissiveImage;
 // directionalLighting
 uniform vec3 u_direct_light_direction;
 uniform vec3 u_direct_light_color;
@@ -24,6 +25,7 @@ void main() {
   float light = dot(v_normal, u_direct_light_direction);
 
   outColor = mix(texture(u_image, v_texCoord), v_color, 0.5);
-  
+
   outColor.rgb *= light;
+  outColor.rgb += texture(u_emissiveImage, v_texCoord).rgb;
 }

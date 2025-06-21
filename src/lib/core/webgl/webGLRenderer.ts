@@ -148,11 +148,11 @@ class WebGLRenderer {
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
       viewProjectionMatrix.translate(objs[i].object.localPosition);
-      viewProjectionMatrix.scale(new Vec3([3, 3, 3]));
-      // viewProjectionMatrix.rotate(0.2, objs[i].localRotation);
+      viewProjectionMatrix.scale(new Vec3([5, 5, 5]));
+      viewProjectionMatrix.rotate(45, objs[i].object.localRotation);
+      viewProjectionMatrix.rotate(1, objs[i].object.localRotation);
 
       // uniform
-      gl.uniform1i(imageLocation, 0);
       gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
       gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
       gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);

@@ -34,13 +34,13 @@ function ReactMapWebglRender(props: PropsType) {
     let material:Material = new Material(null, model.materials[0].image, model.materials[0].emissiveImage);
     material.texCoord = texCoord;
     let object:Object = new Object(mesh, material);
-    object.localPosition = new Vec3([0, 0, -3]);
-    object.localRotation = new Vec3([1, 0, 0]);
+    object.localPosition = new Vec3([0, 0, -2]);
+    object.localRotation = new Vec3([0.5, 1, -0.1]);
     //
     scene.add(object);
 
     function reqeust() {
-      object.localPosition = new Vec3([object.localPosition.x+0.001, 0, -3]);
+      // object.localPosition = new Vec3([object.localPosition.x+0.001, 0, -3]);
       webgl.draw();
       requestAnimationFrame(reqeust);
     }
