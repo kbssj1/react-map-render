@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 0, 0]), "camera");
+    this.camera = new Camera(new Vec3([0, 0, -2]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -149,8 +149,7 @@ class WebGLRenderer {
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
       viewProjectionMatrix.translate(objs[i].object.localPosition);
       viewProjectionMatrix.scale(new Vec3([5, 5, 5]));
-      viewProjectionMatrix.rotate(45, objs[i].object.localRotation);
-      viewProjectionMatrix.rotate(1, objs[i].object.localRotation);
+      viewProjectionMatrix.rotate(50 * Math.PI / 180, objs[i].object.localRotation);
 
       // uniform
       gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
