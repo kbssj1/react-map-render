@@ -15,13 +15,19 @@ export enum BufferType {
   Short = 5123,
 }
 
+export interface gltfModel {
+  scene:gltf.Scene,
+  meshes:any,
+  materials:Material[]
+}
+
 class GltfLoader {
 
   constructor() {
   
   }
 
-  public async loadModel(url:string) {
+  public async loadModel(url:string) : Promise<gltfModel> {
     const response = await fetch(url);
     const gltf = await response.json() as gltf.GlTf;
     const buffers = await Promise.all(
@@ -36,7 +42,7 @@ class GltfLoader {
       scene:scene,
       meshes:meshes,
       materials:materials
-    };
+    } as gltfModel;
   }
 
   private async getBuffer(path: string, buffer: string) {
