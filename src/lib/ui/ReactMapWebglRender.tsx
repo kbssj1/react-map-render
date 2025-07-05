@@ -20,18 +20,11 @@ function ReactMapWebglRender(props: PropsType) {
     let gltfLoader = new GltfLoader();
     let model = await gltfLoader.loadModel("http://localhost:3000/gltf/waterBottle/waterbottle.gltf");
     
-    let positions = model.meshes[0].positions!.data;
-    let indices = model.meshes[0].indices!.data;
-    let texCoord = model.meshes[0].texCoord!.data;
-    let normals = model.meshes[0].normals!.data;
-    
     let scene:Scene = new Scene();
     //
-    let mesh:Mesh = new Mesh();
-    mesh.positions = positions;
-    mesh.indices = indices;
-    mesh.normal = normals;
+    let mesh:Mesh = new Mesh(model);
     let material:Material = new Material(null, model.materials[0].image, model.materials[0].emissiveImage);
+    let texCoord = model.meshes[0].texCoord!.data;
     material.texCoord = texCoord;
     let object:Object = new Object(mesh, material);
     object.localPosition = new Vec3([0, 0, 0]);

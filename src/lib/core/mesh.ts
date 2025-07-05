@@ -1,5 +1,6 @@
 import { Vec3 } from "./math/vec3";
 import Base3DClass from "./base3DClass";
+import { gltfModel } from "./loader/gltfLoader";
 
 class Mesh extends Base3DClass {
 
@@ -7,8 +8,13 @@ class Mesh extends Base3DClass {
     private _normal: Vec3[] = [];
     private _indices: number[] = [];
 
-    constructor() {
+    constructor(gltfModel? : gltfModel) {
       super(new Vec3(), "Object");
+      if (gltfModel) {
+        this.positions = gltfModel.meshes[0].positions!.data;
+        this.indices = gltfModel.meshes[0].indices!.data;
+        this.normal = gltfModel.meshes[0].normals!.data;
+      }
     }
 
     public addPosition(position : Vec3) {
