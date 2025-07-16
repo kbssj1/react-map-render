@@ -88,9 +88,6 @@ class BuffersAndAttributes {
                     srcFormat,
                     srcType,
                     object.material.image);
-
-      var u_image0Location = gl.getUniformLocation(program, "u_image");
-      gl.uniform1i(u_image0Location, 0);
     }
 
     if (object.material.texCoord.length > 0 && object.material.emissiveImage) {
@@ -101,9 +98,6 @@ class BuffersAndAttributes {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.generateMipmap(gl.TEXTURE_2D);
-
-      var u_image0Location2 = gl.getUniformLocation(program, "u_emissiveImage");
-      gl.uniform1i(u_image0Location2, 1);
     }
 
     if (object.mesh.normal.length > 0) 
