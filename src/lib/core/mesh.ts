@@ -8,12 +8,20 @@ class Mesh extends Base3DClass {
     private _normal: Vec3[] = [];
     private _indices: number[] = [];
 
-    constructor(gltfModel? : gltfModel) {
+    constructor(type: string, gltfModel: gltfModel);
+    constructor(type: string);
+
+    constructor(type?: string, gltfModel? : gltfModel) {
       super(new Vec3(), "Object");
-      if (gltfModel) {
-        this.positions = gltfModel.meshes[0].positions!.data;
-        this.indices = gltfModel.meshes[0].indices!.data;
-        this.normal = gltfModel.meshes[0].normals!.data;
+      if (type == "gltf") {
+        if (gltfModel) {
+          this.positions = gltfModel.meshes[0].positions!.data;
+          this.indices = gltfModel.meshes[0].indices!.data;
+          this.normal = gltfModel.meshes[0].normals!.data;
+        }
+      }
+      else if (type == "sphere") {
+        this.setSphereMesh();
       }
     }
 
@@ -48,6 +56,51 @@ class Mesh extends Base3DClass {
     public set normal(normal: Float32Array | Int16Array) {
       for (let i=0;i<normal.length;i+=3) {
         this._normal.push(new Vec3([normal[i], normal[i+1], normal[i+2]]));
+      }
+    }
+
+    private setSphereMesh() {
+      const { positions, normals, indices } = createSphere(5, 20, 20);
+      //
+      this.positions = new Float32Array(positions);
+      this.normal = new Float32Array(normals);
+      this.indices = new Int16Array(indices);
+
+      function createSphere(radius:number, latBands:number, longBands:number) {
+        const positions = [];
+        const indices = [];
+        const normals = [];
+
+        for (let lat = 0; lat <= latBands; lat++) {
+          const theta = lat * Math.PI / latBands;
+          const sinTheta = Math.sin(theta);
+          const cosTheta = Math.cos(theta);
+      
+          for (let lon = 0; lon <= longBands; lon++) {
+            const phi = lon * 2 * Math.PI / longBands;
+            const sinPhi = Math.sin(phi);
+            const cosPhi = Math.cos(phi);
+      
+            const x = sinTheta * cosPhi;
+            const y = cosTheta;
+            const z = sinTheta * sinPhi;
+      
+            positions.push(radius * x, radius * y, radius * z);
+            normals.push(x, y, z);
+          }
+        }  
+
+        for (let lat = 0; lat < latBands; ++lat) {
+          for (let lon = 0; lon < longBands; ++lon) {
+            const first = (lat * (longBands + 1)) + lon;
+            const second = first + longBands + 1;
+      
+            indices.push(first, second, first + 1);
+            indices.push(second, second + 1, first + 1);
+          }
+        }
+      
+        return { positions, normals, indices };
       }
     }
 

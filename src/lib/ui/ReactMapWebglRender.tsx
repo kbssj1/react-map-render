@@ -22,7 +22,7 @@ function ReactMapWebglRender(props: PropsType) {
     
     let scene:Scene = new Scene();
     //
-    let mesh:Mesh = new Mesh(model);
+    let mesh:Mesh = new Mesh("gltf", model);
     let material:Material = new Material(model);
     //
     let object:Object = new Object(mesh, material);
