@@ -13,15 +13,14 @@ class Mesh extends Base3DClass {
 
     constructor(type?: string, gltfModel? : gltfModel) {
       super(new Vec3(), "Object");
-      if (type == "gltf") {
-        if (gltfModel) {
-          this.positions = gltfModel.meshes[0].positions!.data;
-          this.indices = gltfModel.meshes[0].indices!.data;
-          this.normal = gltfModel.meshes[0].normals!.data;
-        }
-      }
-      else if (type == "sphere") {
+      if (type == "gltf" && gltfModel) {
+        this.positions = gltfModel.meshes[0].positions!.data;
+        this.indices = gltfModel.meshes[0].indices!.data;
+        this.normal = gltfModel.meshes[0].normals!.data;
+      } else if (type == "sphere") {
         this.setSphereMesh();
+      } else {
+        console.error("Mesh Constructor Type Error");
       }
     }
 
