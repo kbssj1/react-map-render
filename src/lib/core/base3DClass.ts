@@ -4,6 +4,7 @@ abstract class Base3dClass {
 
     private _localPosition : Vec3 = new Vec3()
     private _localRotation : Vec3 = new Vec3()
+    private _scale: Vec3 = new Vec3()
 
     public name: string = "object";
 
@@ -14,6 +15,7 @@ abstract class Base3dClass {
         if (name) {
             this.name = name;
         }
+        this.scale = new Vec3([1, 1, 1]);
     }
 
     public get localPosition() : Vec3{
@@ -30,6 +32,14 @@ abstract class Base3dClass {
 
     public set localRotation(rotation: Vec3) {
         this._localRotation = rotation;
+    }
+
+    public get scale() : Vec3{
+        return this._scale
+    }
+
+    public set scale(scale: Vec3) {
+        this._scale = scale;
     }
 }
   

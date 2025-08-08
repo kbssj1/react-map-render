@@ -149,7 +149,7 @@ class WebGLRenderer {
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
       viewProjectionMatrix.translate(objs[i].object.localPosition);
-      viewProjectionMatrix.scale(new Vec3([5, 5, 5]));
+      viewProjectionMatrix.scale(objs[i].object.scale);
       viewProjectionMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
 
       // uniform
