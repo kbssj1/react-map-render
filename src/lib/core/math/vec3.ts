@@ -47,6 +47,14 @@ export class Vec3 {
     ]
   }
 
+  add(values: Vec3): Vec3 {
+    this.x += values.x
+    this.y += values.y
+    this.z += values.z
+
+    return this
+  }
+
   squaredLength(): number {
     const x = this.x
     const y = this.y

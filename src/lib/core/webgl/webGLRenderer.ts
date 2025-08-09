@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 0, -2]), "camera");
+    this.camera = new Camera(new Vec3([0, 0, -1.1]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -115,7 +115,7 @@ class WebGLRenderer {
       if (this.camera.localPosition.z < 0.0) this.camera.localPosition.z = 0.0;
     };
 
-    this.inputs.listen(zoom, move);
+    this.inputs.listen(zoom, move, (dx, dy) => { this.camera.localRotation.x += dx * 0.005, this.camera.localRotation.y += dy * 0.005 });
   }
 
   public draw() {
@@ -144,8 +144,13 @@ class WebGLRenderer {
 
       //
       let projectionMatrix:Mat4 = Mat4.identity;
-      projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 1, 2000);
-      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
+      projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
+      // let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
+      let eye = this.camera.localPosition;
+      const target = new Vec3([0, 0, 1]);
+      let up = new Vec3([0, 1, 0]);
+      let cameraMatrix = Mat4.lookAt(eye, target, up);
+      //
       let viewMatrix = cameraMatrix.inverse();
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
       viewProjectionMatrix.translate(objs[i].object.localPosition);
