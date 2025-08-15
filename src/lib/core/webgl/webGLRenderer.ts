@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 0, -1.1]), "camera");
+    this.camera = new Camera(new Vec3([0, 0, -1]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -104,10 +104,9 @@ class WebGLRenderer {
   private createInputs() {
 
     const move = (position: Vec3) => {
-      this.camera.localPosition.x += position.x;
-      this.camera.localPosition.y += position.y;
-      this.camera.localPosition.z += position.z;
-      // console.log(this.camera.localRotation);
+      // this.camera.localPosition.x += position.x;
+      // this.camera.localPosition.y += position.y;
+      // this.camera.localPosition.z += position.z;
     };
 
     const zoom = (delta: number) => {
@@ -115,7 +114,12 @@ class WebGLRenderer {
       if (this.camera.localPosition.z < 0.0) this.camera.localPosition.z = 0.0;
     };
 
-    this.inputs.listen(zoom, move, (dx, dy) => { this.camera.localRotation.x += dx * 0.005, this.camera.localRotation.y += dy * 0.005 });
+    const rotate = (dx:number, dy: number) => {
+      this.camera.localRotation.x += (dx/100);
+      this.camera.localRotation.y += (dy/100) ;
+    } 
+
+    this.inputs.listen(zoom, move, rotate);
   }
 
   public draw() {
@@ -145,14 +149,17 @@ class WebGLRenderer {
       //
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
-      // let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
+      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
       let eye = this.camera.localPosition;
-      const target = new Vec3([0, 0, 1]);
+      const target = new Vec3([0, 0, 0]);
       let up = new Vec3([0, 1, 0]);
-      let cameraMatrix = Mat4.lookAt(eye, target, up);
+      // let cameraMatrix = Mat4.identity;
+      // cameraMatrix.translate(this.camera.localPosition);
+      cameraMatrix.rotate(this.camera.localRotation.x, new Vec3([0,1,0]));
+      cameraMatrix.rotate(this.camera.localRotation.y, new Vec3([1,0,0]));
       //
-      let viewMatrix = cameraMatrix.inverse();
-      let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
+      // let viewMatrix = cameraMatrix.inverse();
+      let viewProjectionMatrix = projectionMatrix.multiply(cameraMatrix);
       viewProjectionMatrix.translate(objs[i].object.localPosition);
       viewProjectionMatrix.scale(objs[i].object.scale);
       viewProjectionMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
