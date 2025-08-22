@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 0, -1]), "camera");
+    this.camera = new Camera(new Vec3([0, 0, 1]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -122,6 +122,23 @@ class WebGLRenderer {
     this.inputs.listen(zoom, move, rotate);
   }
 
+  private setUniforms(object:ToDrawObject, viewProjectionMatrix:Mat4) {
+    const gl = this.gl;
+    // lookup uniforms
+    const matrixLocation = gl.getUniformLocation(object.program, "u_matrix");
+    const directionLightingColor = gl.getUniformLocation(object.program, "u_direct_light_color");
+    const directionLightingDirection = gl.getUniformLocation(object.program, "u_direct_light_direction");
+    const u_image0Location = gl.getUniformLocation(object.program, "u_image");
+    const u_image0Location2 = gl.getUniformLocation(object.program, "u_emissiveImage");
+
+    // uniform
+    gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
+    gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
+    gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);
+    gl.uniform1i(u_image0Location, 0);
+    gl.uniform1i(u_image0Location2, 1);
+  }
+
   public draw() {
     const gl = this.gl;
     const objs = this.toDrawObjects;
@@ -138,13 +155,6 @@ class WebGLRenderer {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
       this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].object, objs[i].bufferInfo, objs[i].program);
-
-      // lookup uniforms
-      const matrixLocation = gl.getUniformLocation(objs[i].program, "u_matrix");
-      const directionLightingColor = gl.getUniformLocation(objs[i].program, "u_direct_light_color");
-      const directionLightingDirection = gl.getUniformLocation(objs[i].program, "u_direct_light_direction");
-      const u_image0Location = gl.getUniformLocation(objs[i].program, "u_image");
-      const u_image0Location2 = gl.getUniformLocation(objs[i].program, "u_emissiveImage");
 
       //
       let projectionMatrix:Mat4 = Mat4.identity;
@@ -164,12 +174,8 @@ class WebGLRenderer {
       viewProjectionMatrix.scale(objs[i].object.scale);
       viewProjectionMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
 
-      // uniform
-      gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
-      gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
-      gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);
-      gl.uniform1i(u_image0Location, 0);
-      gl.uniform1i(u_image0Location2, 1);
+      //
+      this.setUniforms(objs[i], viewProjectionMatrix);
 
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
