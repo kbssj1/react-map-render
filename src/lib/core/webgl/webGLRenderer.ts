@@ -110,13 +110,15 @@ class WebGLRenderer {
     };
 
     const zoom = (delta: number) => {
-      this.camera.localPosition.z += delta;
-      if (this.camera.localPosition.z < 0.0) this.camera.localPosition.z = 0.0;
+      this.camera.cameraDistance += delta;
+      if (this.camera.cameraDistance < 0.0) this.camera.cameraDistance = 0.0;
     };
 
     const rotate = (dx:number, dy: number) => {
-      this.camera.localRotation.x += (dx/100);
-      this.camera.localRotation.y += (dy/100) ;
+      // this.camera.localRotation.x += (dx/100);
+      // this.camera.localRotation.y += (dy/100);
+      this.camera.yaw   -= (dx/100);
+      this.camera.pitch += (dy/100);
     } 
 
     this.inputs.listen(zoom, move, rotate);
@@ -156,26 +158,35 @@ class WebGLRenderer {
       gl.bindVertexArray(objs[i].vertexArray);
       this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].object, objs[i].bufferInfo, objs[i].program);
 
-      //
+      // 
       let projectionMatrix:Mat4 = Mat4.identity;
       projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
-      let cameraMatrix = Mat4.lookAt(this.camera.localPosition, objs[i].object.localPosition);
-      let eye = this.camera.localPosition;
-      const target = new Vec3([0, 0, 0]);
-      let up = new Vec3([0, 1, 0]);
-      // let cameraMatrix = Mat4.identity;
-      // cameraMatrix.translate(this.camera.localPosition);
-      cameraMatrix.rotate(this.camera.localRotation.x, new Vec3([0,1,0]));
-      cameraMatrix.rotate(this.camera.localRotation.y, new Vec3([1,0,0]));
-      //
-      // let viewMatrix = cameraMatrix.inverse();
-      let viewProjectionMatrix = projectionMatrix.multiply(cameraMatrix);
-      viewProjectionMatrix.translate(objs[i].object.localPosition);
-      viewProjectionMatrix.scale(objs[i].object.scale);
-      viewProjectionMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
 
       //
-      this.setUniforms(objs[i], viewProjectionMatrix);
+      this.camera.pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.camera.pitch));
+      let radius = this.camera.cameraDistance;
+      let eye = new Vec3([
+        objs[i].object.localPosition.x + radius * Math.cos(this.camera.pitch) * Math.sin(this.camera.yaw),
+        objs[i].object.localPosition.y + radius * Math.sin(this.camera.pitch),
+        objs[i].object.localPosition.z + radius * Math.cos(this.camera.pitch) * Math.cos(this.camera.yaw)
+      ]);
+      let up = new Vec3([0, 1, 0]);
+
+      // View matrix
+      let viewMatrix = Mat4.lookAt(eye, objs[i].object.localPosition, up);
+
+      // Model matrix
+      let modelMatrix = Mat4.identity;
+      modelMatrix.translate(objs[i].object.localPosition);
+      modelMatrix.scale(objs[i].object.scale);
+      // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
+
+      // ViewProjection
+      let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
+      let mvp = viewProjectionMatrix.multiply(modelMatrix);
+
+      //
+      this.setUniforms(objs[i], mvp);
 
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
