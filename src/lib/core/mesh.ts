@@ -19,6 +19,8 @@ class Mesh extends Base3DClass {
         this.normal = gltfModel.meshes[0].normals!.data;
       } else if (type == "sphere") {
         this.setSphereMesh();
+      } else if (type == "box") {
+        this.setBoxMesh(1,1,1);
       } else {
         console.error("Mesh Constructor Type Error");
       }
@@ -101,6 +103,45 @@ class Mesh extends Base3DClass {
       
         return { positions, normals, indices };
       }
+    }
+
+    private setBoxMesh(width:number=1, height:number=1, depth:number=1) {
+      const w = width / 2;
+      const h = height / 2;
+      const d = depth / 2;
+
+      const positions = [
+        -w, -h,  d,  w, -h,  d,  w,  h,  d,  -w,  h,  d,
+        -w, -h, -d, -w,  h, -d,  w,  h, -d,  w, -h, -d,
+        -w,  h, -d, -w,  h,  d,  w,  h,  d,  w,  h, -d,
+        -w, -h, -d,  w, -h, -d,  w, -h,  d,  -w, -h,  d,
+        w, -h, -d,  w,  h, -d,  w,  h,  d,  w, -h,  d,
+        -w, -h, -d, -w, -h,  d, -w,  h,  d, -w,  h, -d,
+      ];
+
+      //
+      const normals = [
+        0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,
+        0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1,
+        0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,
+        0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0,
+        1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,
+       -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,
+      ];
+
+      // 
+      const indices = [
+        0,1,2,   0,2,3,       
+        4,5,6,   4,6,7,       
+        8,9,10,  8,10,11,    
+        12,13,14,12,14,15,    
+        16,17,18,16,18,19,    
+        20,21,22,20,22,23,   
+      ];
+
+      this.positions = new Float32Array(positions);
+      this.normal = new Float32Array(normals);
+      this.indices = new Int16Array(indices);
     }
 
     get arrayPositions() : number[] {
