@@ -10,14 +10,16 @@ class Material {
   public image:Nullable<HTMLImageElement> = null;
   public emissiveImage:Nullable<HTMLImageElement> = null;
 
-  constructor(gltfModel? : gltfModel) {
+  constructor(gltfModel? : gltfModel, color?: Vec3) {
     if (gltfModel) {
       let texCoord = gltfModel.meshes[0].texCoord!.data;
       this.texCoord = texCoord;
       this.image = gltfModel.materials[0].image;
       this.emissiveImage = gltfModel.materials[0].emissiveImage;
     }
-    this.color = null;
+    if (color) {
+      this.color = color;
+    }
   }
 
   get texCoord() : number[] {

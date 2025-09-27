@@ -22,8 +22,8 @@ function ReactMapWebglRender(props: PropsType) {
     
     let scene:Scene = new Scene();
     //
-    let mesh:Mesh = new Mesh("gltf", model);
-    let material:Material = new Material(model);
+    let mesh:Mesh = new Mesh("box");
+    let material:Material = new Material(undefined, new Vec3([255, 0, 0]));
     //
     let object:Object = new Object(mesh, material);
     object.localPosition = new Vec3([0, 0, 0]);

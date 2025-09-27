@@ -44,6 +44,24 @@ class BuffersAndAttributes {
     var offset = 0;        
     gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
 
+    if (object.material.color) {
+      let colorAttributeLocation = gl.getAttribLocation(program, "a_color");
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.colorBuffer);
+
+      let vertexCount = object.mesh.arrayPositions.length / 3;
+      let colorArray: number[] = [];
+      for (let i = 0; i < vertexCount; i++) {
+        colorArray.push(object.material.color.x,
+                        object.material.color.y,
+                        object.material.color.z,
+                        1.0);
+      }
+
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorArray), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(colorAttributeLocation);
+      gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
+    }
+
     if (object.material.texCoord.length > 0)
     {
       let texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
@@ -81,13 +99,19 @@ class BuffersAndAttributes {
       var internalFormat = gl.RGBA;   // format we want in the texture
       var srcFormat = gl.RGBA;        // format of data we are supplying
       var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
-      
-      gl.texImage2D(gl.TEXTURE_2D,
-                    mipLevel,
-                    internalFormat,
-                    srcFormat,
-                    srcType,
-                    object.material.image);
+
+      if (object.material.image)
+      {
+        gl.texImage2D(gl.TEXTURE_2D,
+                      mipLevel,
+                      internalFormat,
+                      srcFormat,
+                      srcType,
+                      object.material.image);
+      }
+      else{
+        // print error
+      }
     }
 
     if (object.material.texCoord.length > 0 && object.material.emissiveImage) {
