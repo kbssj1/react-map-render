@@ -5,6 +5,7 @@ abstract class Base3dClass {
     private _localPosition : Vec3 = new Vec3()
     private _localRotation : Vec3 = new Vec3()
     private _scale: Vec3 = new Vec3()
+    private _dirtyFlag: boolean = false;
 
     public name: string = "object";
 
@@ -23,7 +24,10 @@ abstract class Base3dClass {
     }
 
     public set localPosition(position: Vec3) {
-        this._localPosition = position;
+        if (!this._localPosition.equals(position)){
+            this._localPosition = position;
+            this._dirtyFlag = true;
+        }
     }
 
     public get localRotation() : Vec3{
@@ -31,7 +35,10 @@ abstract class Base3dClass {
     }
 
     public set localRotation(rotation: Vec3) {
-        this._localRotation = rotation;
+        if (!this._localPosition.equals(rotation)){
+            this._localRotation = rotation;
+            this._dirtyFlag = true;
+        }
     }
 
     public get scale() : Vec3{
@@ -39,7 +46,18 @@ abstract class Base3dClass {
     }
 
     public set scale(scale: Vec3) {
-        this._scale = scale;
+        if (!this._localPosition.equals(scale)){
+            this._scale = scale;
+            this._dirtyFlag = true;
+        }
+    }
+
+    public get dirtyFlag() : boolean {
+        return this._dirtyFlag;
+    }
+
+    public set dirtyFlag(flag: boolean) {
+        this._dirtyFlag = flag;
     }
 }
   

@@ -173,13 +173,16 @@ class WebGLRenderer {
       let up = new Vec3([0, 1, 0]);
 
       // View matrix
-      let viewMatrix = Mat4.lookAt(eye, objs[i].object.localPosition, up);
+      let viewMatrix = Mat4.lookAt(eye, new Vec3([0, 0, 0]), up);
 
       // Model matrix
       let modelMatrix = Mat4.identity;
-      modelMatrix.translate(objs[i].object.localPosition);
-      modelMatrix.scale(objs[i].object.scale);
-      // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
+      if (objs[i].object.dirtyFlag) {
+        modelMatrix.translate(objs[i].object.localPosition);
+        modelMatrix.scale(objs[i].object.scale);
+        // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
+        objs[i].object.dirtyFlag = false;
+      }
 
       // ViewProjection
       let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
