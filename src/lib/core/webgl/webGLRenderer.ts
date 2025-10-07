@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 0, 1]), "camera");
+    this.camera = new Camera(new Vec3([0, 5, 0]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -173,7 +173,7 @@ class WebGLRenderer {
       let up = new Vec3([0, 1, 0]);
 
       // View matrix
-      let viewMatrix = Mat4.lookAt(eye, new Vec3([0, 0, 0]), up);
+      let viewMatrix = Mat4.lookAt(eye, objs[i].object.localPosition, up);
 
       // Model matrix
       let modelMatrix = Mat4.identity;
