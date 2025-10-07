@@ -5,6 +5,7 @@ abstract class Base3dClass {
     private _localPosition : Vec3 = new Vec3()
     private _localRotation : Vec3 = new Vec3()
     private _scale: Vec3 = new Vec3()
+    /** Recalculate only when position, rotation, scale changes, not every frame */
     private _dirtyFlag: boolean = false;
 
     public name: string = "object";
