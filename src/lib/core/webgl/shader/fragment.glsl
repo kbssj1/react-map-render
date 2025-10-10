@@ -13,19 +13,24 @@ uniform vec3 u_direct_light_color;
 
 // the texCoords passed in from the vertex shader.
 in vec2 v_texCoord;
-
 in vec4 v_color;
-
 in vec3 v_normal;
 
 // we need to declare an output for the fragment shader
 out vec4 outColor;
 
 void main() {
-  float light = dot(v_normal, u_direct_light_direction);
+  vec3 baseColor = mix(texture(u_image, v_texCoord).rgb, v_color.rgb, 0.5);
 
-  outColor = mix(texture(u_image, v_texCoord), v_color, 0.5);
+  vec3 N = normalize(v_normal);
+  vec3 L = normalize(u_direct_light_direction);
 
-  outColor.rgb *= light;
-  outColor.rgb += texture(u_emissiveImage, v_texCoord).rgb;
+  vec3 emissive = texture(u_emissiveImage, v_texCoord).rgb;
+
+  float diff = max(dot(N, L), 0.005);
+  vec3 diffuse = diff * baseColor * u_direct_light_color;
+
+  vec3 finalColor = diffuse + emissive;
+
+  outColor = vec4(finalColor, 1.0);
 }

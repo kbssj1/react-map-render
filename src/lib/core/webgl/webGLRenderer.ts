@@ -124,17 +124,19 @@ class WebGLRenderer {
     this.inputs.listen(zoom, move, rotate);
   }
 
-  private setUniforms(object:ToDrawObject, viewProjectionMatrix:Mat4) {
+  private setUniforms(object:ToDrawObject, modelMatrix:Mat4, viewProjectionMatrix:Mat4) {
     const gl = this.gl;
     // lookup uniforms
-    const matrixLocation = gl.getUniformLocation(object.program, "u_matrix");
+    const viewMatrixLocation = gl.getUniformLocation(object.program, "u_viewMatrix");
+    const modelMatrixLocation = gl.getUniformLocation(object.program, "u_modelMatrix");
     const directionLightingColor = gl.getUniformLocation(object.program, "u_direct_light_color");
     const directionLightingDirection = gl.getUniformLocation(object.program, "u_direct_light_direction");
     const u_image0Location = gl.getUniformLocation(object.program, "u_image");
     const u_image0Location2 = gl.getUniformLocation(object.program, "u_emissiveImage");
 
     // uniform
-    gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.array());
+    gl.uniformMatrix4fv(viewMatrixLocation, false, viewProjectionMatrix.array());
+    gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix.array());
     gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
     gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);
     gl.uniform1i(u_image0Location, 0);
@@ -189,7 +191,7 @@ class WebGLRenderer {
       let mvp = viewProjectionMatrix.multiply(modelMatrix);
 
       //
-      this.setUniforms(objs[i], mvp);
+      this.setUniforms(objs[i], modelMatrix, mvp);
 
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;
