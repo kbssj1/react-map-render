@@ -60,8 +60,8 @@ class Mesh extends Base3DClass {
       }
     }
 
-    private setSphereMesh() {
-      const { positions, normals, indices } = createSphere(1, 20, 20);
+    private setSphereMesh(radius:number=1, latBands:number=20, longBands:number=20) {
+      const { positions, normals, indices } = createSphere(radius, latBands, longBands);
       //
       this.positions = new Float32Array(positions);
       this.normal = new Float32Array(normals);
