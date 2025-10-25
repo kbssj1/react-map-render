@@ -15,28 +15,32 @@ interface PropsType {
 function ReactMapWebglRender(props: PropsType) {
 
   async function run() {
+    
+    let gltfLoader = new GltfLoader();
+    let model = await gltfLoader.loadModel("http://localhost:3000/gltf/waterBottle/waterbottle.gltf");
 
     let scene:Scene = new Scene();
     //
-    let mesh:Mesh = new Mesh("box");
-    let material:Material = new Material(undefined, new Vec3([255, 0, 0]));
+    let mesh:Mesh = new Mesh("sphere");
+    let material:Material = new Material(undefined, new Vec3([0, 255, 0]));
     //
     let mesh2:Mesh = new Mesh("sphere");
     let material2:Material = new Material(undefined, new Vec3([0, 255, 0]));
     //
     let object:Object = new Object(mesh, material);
-    object.localPosition = new Vec3([2, 0, 0]);
+    object.localPosition = new Vec3([1, 0, 0]);
     object.localRotation = new Vec3([0, 0, 0]);
+    object.scale = new Vec3([2, 2, 2]);
     //
     let object2:Object = new Object(mesh2, material2);
     object2.localPosition = new Vec3([0, 0, 0]);
     object2.localRotation = new Vec3([0, 0, 0]);
     //
-    scene.add(object);
     scene.add(object2);
+    scene.add(object);
 
     function reqeust() {
-      object2.localPosition = new Vec3([object2.localPosition.x+0.000008, 0, 0]);
+      // object2.localPosition = new Vec3([object2.localPosition.x+0.000008, 0, 0]);
       webgl.draw();
       requestAnimationFrame(reqeust);
     }

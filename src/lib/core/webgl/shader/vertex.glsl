@@ -8,7 +8,7 @@ in vec3 a_normal;
 in vec4 a_color;
 
 // A matrix to transform the positions by
-uniform mat4 u_viewMatrix;
+uniform mat4 u_mvp;
 uniform mat4 u_modelMatrix;
 
 //
@@ -19,11 +19,10 @@ out vec3 v_normal;
 
 //
 void main() {
-  gl_Position = u_viewMatrix * a_position;
+  gl_Position = u_mvp * a_position;
 
   v_texCoord = a_texCoord;
-  v_position = gl_Position.xyz;
   v_color = a_color;
 
-  v_normal = mat3(u_modelMatrix) * a_normal;
+  v_normal = mat3(transpose(inverse(u_modelMatrix))) * a_normal;
 }

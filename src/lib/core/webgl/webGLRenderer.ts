@@ -50,7 +50,7 @@ class WebGLRenderer {
     this.canvas = canvas;
     //
     this.toDrawObjects = [];
-    this.camera = new Camera(new Vec3([0, 5, 0]), "camera");
+    this.camera = new Camera(new Vec3([0, 10, 0]), "camera");
     this.inputs = new Inputs(this.canvas);
     this.buffersAndAttributes = new BuffersAndAttributes();
     this.createInputs();
@@ -65,9 +65,7 @@ class WebGLRenderer {
           let bufferInfo = this.buffersAndAttributes.createBufferInfoFromArrays(gl);
           this.toDrawObjects.push(new ToDrawObject(object, webglProgram, vao, bufferInfo));
         }
-      }
-      else if (scene.getObject(i) instanceof DirectionalLighting)
-      {
+      } else if (scene.getObject(i) instanceof DirectionalLighting) {
         directionalLighting = (scene.getObject(i) as DirectionalLighting);
       }
     }
@@ -124,10 +122,10 @@ class WebGLRenderer {
     this.inputs.listen(zoom, move, rotate);
   }
 
-  private setUniforms(object:ToDrawObject, modelMatrix:Mat4, viewProjectionMatrix:Mat4) {
+  private setUniforms(object:ToDrawObject, modelMatrix:Mat4, mvp:Mat4) {
     const gl = this.gl;
     // lookup uniforms
-    const viewMatrixLocation = gl.getUniformLocation(object.program, "u_viewMatrix");
+    const mvpMatrixLocation = gl.getUniformLocation(object.program, "u_mvp");
     const modelMatrixLocation = gl.getUniformLocation(object.program, "u_modelMatrix");
     const directionLightingColor = gl.getUniformLocation(object.program, "u_direct_light_color");
     const directionLightingDirection = gl.getUniformLocation(object.program, "u_direct_light_direction");
@@ -135,7 +133,7 @@ class WebGLRenderer {
     const u_image0Location2 = gl.getUniformLocation(object.program, "u_emissiveImage");
 
     // uniform
-    gl.uniformMatrix4fv(viewMatrixLocation, false, viewProjectionMatrix.array());
+    gl.uniformMatrix4fv(mvpMatrixLocation, false, mvp.array());
     gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix.array());
     gl.uniform3fv(directionLightingColor, this.environment.directionalLighting.color.xyz);
     gl.uniform3fv(directionLightingDirection, this.environment.directionalLighting.direction.xyz);
@@ -155,40 +153,37 @@ class WebGLRenderer {
 
     this.resizeCanvasToDisplaySize(gl.canvas, 1);
 
+    // view Matrix
+    this.camera.pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.camera.pitch));
+    let radius = this.camera.cameraDistance;
+    let eye = new Vec3([
+      this.camera.localPosition.x + radius * Math.cos(this.camera.pitch) * Math.sin(this.camera.yaw),
+      this.camera.localPosition.y + radius * Math.sin(this.camera.pitch),
+      this.camera.localPosition.z + radius * Math.cos(this.camera.pitch) * Math.cos(this.camera.yaw)
+    ]);
+    let up = new Vec3([0, 1, 0]);
+    let viewMatrix = Mat4.lookAt(eye, new Vec3([0, 0, 0]), up);
+
+    // projectionMatrix
+    let projectionMatrix:Mat4 = new Mat4().setIdentity();
+    projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
+
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
       this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].object, objs[i].bufferInfo, objs[i].program);
 
-      // 
-      let projectionMatrix:Mat4 = Mat4.identity;
-      projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
-
-      //
-      this.camera.pitch = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.camera.pitch));
-      let radius = this.camera.cameraDistance;
-      let eye = new Vec3([
-        objs[i].object.localPosition.x + radius * Math.cos(this.camera.pitch) * Math.sin(this.camera.yaw),
-        objs[i].object.localPosition.y + radius * Math.sin(this.camera.pitch),
-        objs[i].object.localPosition.z + radius * Math.cos(this.camera.pitch) * Math.cos(this.camera.yaw)
-      ]);
-      let up = new Vec3([0, 1, 0]);
-
-      // View matrix
-      let viewMatrix = Mat4.lookAt(eye, objs[i].object.localPosition, up);
-
       // Model matrix
-      let modelMatrix = Mat4.identity;
+      let modelMatrix = new Mat4().setIdentity();
       if (objs[i].object.dirtyFlag) {
         modelMatrix.translate(objs[i].object.localPosition);
         modelMatrix.scale(objs[i].object.scale);
         // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
         objs[i].object.dirtyFlag = false;
       }
-
-      // ViewProjection
-      let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
-      let mvp = viewProjectionMatrix.multiply(modelMatrix);
+      // mvp
+      let mv = viewMatrix.multiply(modelMatrix);
+      let mvp = projectionMatrix.multiply(mv);
 
       //
       this.setUniforms(objs[i], modelMatrix, mvp);
