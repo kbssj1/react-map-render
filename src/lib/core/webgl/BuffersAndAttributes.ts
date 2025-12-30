@@ -21,7 +21,15 @@ class BuffersAndAttributes {
   }
 
   public setBuffersAndAttributes(gl: WebGL2RenderingContext, object:Object, bufferInfo: BufferInfo, program: WebGLProgram) {
-    let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+    const hasUV = object.material.texCoord.length > 0;
+    const hasBaseImage = hasUV && !!object.material.image;
+    const hasEmissiveImage = hasUV && !!object.material.emissiveImage;
+
+    const uUseBaseLoc = gl.getUniformLocation(program, "u_useBaseTexture");
+    if (uUseBaseLoc) gl.uniform1i(uUseBaseLoc, hasBaseImage ? 1 : 0);
+
+    const uUseEmissiveTexLoc = gl.getUniformLocation(program, "u_useEmissiveTexture");
+    if (uUseEmissiveTexLoc) gl.uniform1i(uUseEmissiveTexLoc, hasEmissiveImage ? 1 : 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.mesh.arrayPositions), gl.STATIC_DRAW);
@@ -35,7 +43,7 @@ class BuffersAndAttributes {
       );
     }
 
-    // Turn on the attribute
+    let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
     gl.enableVertexAttribArray(positionAttributeLocation);
     var size = 3;          
     var type = gl.FLOAT;   
@@ -76,32 +84,31 @@ class BuffersAndAttributes {
       var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
       var offset = 0;        // start at the beginning of the buffer
       gl.vertexAttribPointer(texCoordAttributeLocation, size, type, normalize, stride, offset);
-  
-      // Create a texture.
-      var texture = gl.createTexture();
-  
-      // make unit 0 the active texture uint
-      // (ie, the unit all other texture commands will affect
-      gl.activeTexture(gl.TEXTURE0 + 0);
-  
-      // Bind it to texture unit 0' 2D bind point
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-  
-      // Set the parameters so we don't need mips and so we're not filtering
-      // and we don't repeat at the edges
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  
-      // Upload the image into the texture.
-      var mipLevel = 0;               // the largest mip
-      var internalFormat = gl.RGBA;   // format we want in the texture
-      var srcFormat = gl.RGBA;        // format of data we are supplying
-      var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
+
 
       if (object.material.image)
       {
+        // Create a texture.
+        var texture = gl.createTexture();
+        // make unit 0 the active texture uint
+        // (ie, the unit all other texture commands will affect
+        gl.activeTexture(gl.TEXTURE0 + 0);
+    
+        // Bind it to texture unit 0' 2D bind point
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+    
+        // Set the parameters so we don't need mips and so we're not filtering
+        // and we don't repeat at the edges
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    
+        // Upload the image into the texture.
+        var mipLevel = 0;               // the largest mip
+        var internalFormat = gl.RGBA;   // format we want in the texture
+        var srcFormat = gl.RGBA;        // format of data we are supplying
+        var srcType = gl.UNSIGNED_BYTE; // type of data we are supplying
         gl.texImage2D(gl.TEXTURE_2D,
                       mipLevel,
                       internalFormat,

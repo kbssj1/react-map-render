@@ -21,6 +21,8 @@ class Mesh extends Base3DClass {
         this.setSphereMesh();
       } else if (type == "box") {
         this.setBoxMesh(1,1,1);
+      } else if (type == "plane") {
+        this.setPlaneMesh(10, 10);
       } else {
         console.error("Mesh Constructor Type Error");
       }
@@ -143,6 +145,35 @@ class Mesh extends Base3DClass {
       this.normal = new Float32Array(normals);
       this.indices = new Int16Array(indices);
     }
+
+    private setPlaneMesh(width: number = 1, depth: number = 1) {
+      const w = width / 2;
+      const d = depth / 2;
+
+      const positions = [
+        -w, 0,  d, 
+        w, 0,  d,   
+        w, 0, -d,   
+        -w, 0, -d,   
+      ];
+
+      const normals = [
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+      ];
+
+      const indices = [
+        0, 1, 2,
+        0, 2, 3,
+      ];
+
+      this.positions = new Float32Array(positions);
+      this.normal = new Float32Array(normals);
+      this.indices = new Int16Array(indices);
+    }
+
 
     get arrayPositions() : number[] {
       let array = [];

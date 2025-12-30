@@ -11,6 +11,9 @@ uniform sampler2D u_emissiveImage;
 uniform vec3 u_direct_light_direction;
 uniform vec3 u_direct_light_color;
 
+uniform bool u_useBaseTexture;
+uniform bool u_useEmissiveTexture;
+
 // the texCoords passed in from the vertex shader.
 in vec2 v_texCoord;
 in vec4 v_color;
@@ -20,12 +23,18 @@ in vec3 v_normal;
 out vec4 outColor;
 
 void main() {
-  vec3 baseColor = mix(texture(u_image, v_texCoord).rgb, v_color.rgb, 0.5);
+  vec3 baseColor = v_color.rgb;
+  if (u_useBaseTexture) {
+    baseColor = texture(u_image, v_texCoord).rgb;
+  }
+
+  vec3 emissive = vec3(0.0);
+  if (u_useEmissiveTexture) {
+    emissive = texture(u_emissiveImage, v_texCoord).rgb;
+  }
 
   vec3 N = normalize(v_normal);
   vec3 L = normalize(u_direct_light_direction);
-
-  vec3 emissive = texture(u_emissiveImage, v_texCoord).rgb;
 
   float diff = max(dot(N, L), 0.005);
   vec3 diffuse = diff * baseColor * u_direct_light_color;
