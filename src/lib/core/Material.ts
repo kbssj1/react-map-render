@@ -31,6 +31,32 @@ class Material {
       this._texCoord.push(texCoord[i]);
     }
   }
+
+  public setPlaneTexcoord() {
+    this.texCoord = new Float32Array([
+      0, 0,
+      1, 0,
+      1, 1,
+      0, 1,
+    ]);
+  }
+
+  public setBoxTexcoord() {
+    this.texCoord = new Float32Array([
+      // Front (+Z)
+      0, 0,   1, 0,   1, 1,   0, 1,
+      // Back (-Z)
+      0, 0,   1, 0,   1, 1,   0, 1,
+      // Top (+Y)
+      0, 0,   1, 0,   1, 1,   0, 1,
+      // Bottom (-Y)
+      0, 0,   1, 0,   1, 1,   0, 1,
+      // Right (+X)
+      0, 0,   1, 0,   1, 1,   0, 1,
+      // Left (-X)
+      0, 0,   1, 0,   1, 1,   0, 1,
+    ]);
+  }
 }
   
 export default Material;

@@ -36,10 +36,10 @@ void main() {
   vec3 N = normalize(v_normal);
   vec3 L = normalize(u_direct_light_direction);
 
-  float diff = max(dot(N, L), 0.005);
+  float diff = max(dot(N, L), 0.0);
   vec3 diffuse = diff * baseColor * u_direct_light_color;
 
-  vec3 finalColor = diffuse + emissive;
-
+  float ambient = 0.25; // 0.15~0.35 사이 추천
+  vec3 finalColor = baseColor * ambient + diffuse + emissive;
   outColor = vec4(finalColor, 1.0);
 }

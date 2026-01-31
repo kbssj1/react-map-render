@@ -168,6 +168,8 @@ class WebGLRenderer {
     let projectionMatrix:Mat4 = new Mat4().setIdentity();
     projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
 
+    let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
+
     for (let i=0;i<objs.length;++i) {
       gl.useProgram(objs[i].program);
       gl.bindVertexArray(objs[i].vertexArray);
@@ -182,8 +184,7 @@ class WebGLRenderer {
         objs[i].object.dirtyFlag = false;
       }
       // mvp
-      let mv = viewMatrix.multiply(modelMatrix);
-      let mvp = projectionMatrix.multiply(mv);
+      let mvp = viewProjectionMatrix.multiply(modelMatrix);
 
       //
       this.setUniforms(objs[i], modelMatrix, mvp);

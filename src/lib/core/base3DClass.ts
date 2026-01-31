@@ -36,7 +36,7 @@ abstract class Base3dClass {
     }
 
     public set localRotation(rotation: Vec3) {
-        if (!this._localPosition.equals(rotation)){
+        if (!this._localRotation.equals(rotation)){
             this._localRotation = rotation;
             this._dirtyFlag = true;
         }
@@ -47,7 +47,7 @@ abstract class Base3dClass {
     }
 
     public set scale(scale: Vec3) {
-        if (!this._localPosition.equals(scale)){
+        if (!this._scale.equals(scale)){
             this._scale = scale;
             this._dirtyFlag = true;
         }

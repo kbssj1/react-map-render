@@ -26,15 +26,13 @@ function ReactMapWebglRender(props: PropsType) {
     let mesh:Mesh = new Mesh("plane");
     let material:Material = new Material(undefined, new Vec3([0, 255, 255]));
     material.image = img;
-    material.texCoord = new Float32Array([
-      0, 0,
-      1, 0,
-      1, 1,
-      0, 1,
-    ]);
+    material.setPlaneTexcoord();
+
     //
-    let mesh2:Mesh = new Mesh("sphere");
+    let mesh2:Mesh = new Mesh("box");
     let material2:Material = new Material(undefined, new Vec3([0, 255, 0]));
+    material2.image = img;
+    material2.setBoxTexcoord();
     //
     let object:Object = new Object(mesh, material);
     object.localPosition = new Vec3([0, 0, 0]);
@@ -44,10 +42,11 @@ function ReactMapWebglRender(props: PropsType) {
     let object2:Object = new Object(mesh2, material2);
     object2.localPosition = new Vec3([0, 0, 0]);
     object2.localRotation = new Vec3([0, 0, 0]);
+    object2.scale = new Vec3([1, 1, 1]);
     //
     
     scene.add(object);
-    // scene.add(object2);
+    scene.add(object2);
 
     function reqeust() {
       // object2.localPosition = new Vec3([object2.localPosition.x+0.000008, 0, 0]);
