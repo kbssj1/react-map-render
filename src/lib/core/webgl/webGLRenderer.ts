@@ -26,6 +26,7 @@ class ToDrawObject {
   public program:WebGLProgram
   public vertexArray:WebGLVertexArrayObject
   public bufferInfo:BufferInfo
+  public modelMatrix: Mat4 = new Mat4().setIdentity();
 
   constructor(object: Object, program: WebGLProgram, vertexArray:WebGLVertexArrayObject, bufferInfo: BufferInfo) {
     this.object = object;
@@ -175,19 +176,19 @@ class WebGLRenderer {
       gl.bindVertexArray(objs[i].vertexArray);
       this.buffersAndAttributes.setBuffersAndAttributes(gl, objs[i].object, objs[i].bufferInfo, objs[i].program);
 
-      // Model matrix
-      let modelMatrix = new Mat4().setIdentity();
+      const drawObj = objs[i];
       if (objs[i].object.dirtyFlag) {
-        modelMatrix.translate(objs[i].object.localPosition);
-        modelMatrix.scale(objs[i].object.scale);
+        drawObj.modelMatrix.setIdentity();
+        drawObj.modelMatrix.translate(drawObj.object.localPosition);
+        drawObj.modelMatrix.scale(drawObj.object.scale);
         // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
         objs[i].object.dirtyFlag = false;
       }
       // mvp
-      let mvp = viewProjectionMatrix.multiply(modelMatrix);
+      let mvp = viewProjectionMatrix.multiply(drawObj.modelMatrix);
 
       //
-      this.setUniforms(objs[i], modelMatrix, mvp);
+      this.setUniforms(objs[i], drawObj.modelMatrix, mvp);
 
       // Draw the rectangle.
       var primitiveType = gl.TRIANGLES;

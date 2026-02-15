@@ -42,7 +42,7 @@ function ReactMapWebglRender(props: PropsType) {
     let object2:Object = new Object(mesh2, material2);
     object2.localPosition = new Vec3([0, 0, 0]);
     object2.localRotation = new Vec3([0, 0, 0]);
-    object2.scale = new Vec3([1, 1, 1]);
+    object2.scale = new Vec3([3, 3, 3]);
     //
     
     scene.add(object);

@@ -1,4 +1,5 @@
 import { Vec3 } from "./math/vec3";
+import { Mat4 } from "./math/mat4";
 
 abstract class Base3dClass {
 
