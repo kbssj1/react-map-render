@@ -3,6 +3,7 @@ import ShaderProgram from "./shaderProgram";
 import VERTEX_SHADER from "./shader/vertex.glsl";
 import FRAGMENT_SHADER from "./shader/fragment.glsl";
 import { Mat4 } from "../math/mat4";
+import { degToRad } from "../math/angle";
 import { Vec3 } from "../math/vec3";
 import Object from "../object";
 import Scene from "../scene";
@@ -167,7 +168,7 @@ class WebGLRenderer {
 
     // projectionMatrix
     let projectionMatrix:Mat4 = new Mat4().setIdentity();
-    projectionMatrix = projectionMatrix.perspective(60 * Math.PI / 180, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
+    projectionMatrix = projectionMatrix.perspective(degToRad(60), this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 2000);
 
     let viewProjectionMatrix = projectionMatrix.multiply(viewMatrix);
 
@@ -181,7 +182,7 @@ class WebGLRenderer {
         drawObj.modelMatrix.setIdentity();
         drawObj.modelMatrix.translate(drawObj.object.localPosition);
         drawObj.modelMatrix.scale(drawObj.object.scale);
-        // modelMatrix.rotate(-90 * Math.PI / 180, objs[i].object.localRotation);
+        // modelMatrix.rotate(degToRad(-90), objs[i].object.localRotation);
         objs[i].object.dirtyFlag = false;
       }
       // mvp
